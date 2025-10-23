@@ -4,17 +4,17 @@
 @Author: HengLine
 @Time: 2025/08 - 2025/11
 """
-import os
-import sys
 import logging
+import sys
+
+import colorama
+from colorama import Fore, Style, Back
 
 # 全局变量存储控制台颜色状态
 console_colors_initialized = False
 
 # 尝试导入colorama库
 try:
-    import colorama
-    from colorama import Fore, Style, Back
     HAS_COLORAMA = True
     # 定义颜色常量
     COLORS = {
@@ -28,11 +28,11 @@ except ImportError:
     HAS_COLORAMA = False
     # 定义ANSI颜色代码作为备选
     COLORS = {
-        logging.DEBUG: '\033[94m',      # 蓝色
-        logging.INFO: '\033[92m',       # 绿色
-        logging.WARNING: '\033[93m',    # 黄色
-        logging.ERROR: '\033[91m',      # 红色
-        logging.CRITICAL: '\033[95m',   # 紫色
+        logging.DEBUG: '\033[94m',  # 蓝色
+        logging.INFO: '\033[92m',  # 绿色
+        logging.WARNING: '\033[93m',  # 黄色
+        logging.ERROR: '\033[91m',  # 红色
+        logging.CRITICAL: '\033[95m',  # 紫色
     }
     # 重置颜色代码
     RESET = '\033[0m'
@@ -47,10 +47,10 @@ def init_console_colors():
     在Windows平台上，使用colorama库启用ANSI颜色代码支持
     """
     global console_colors_initialized
-    
+
     if console_colors_initialized:
         return
-    
+
     if IS_WINDOWS:
         if HAS_COLORAMA:
             # 初始化colorama，autoreset=True确保每次打印后自动重置颜色
@@ -64,7 +64,7 @@ def init_console_colors():
     else:
         # 非Windows平台通常原生支持ANSI颜色代码
         print("[控制台颜色] 非Windows平台，直接支持ANSI颜色代码")
-    
+
     console_colors_initialized = True
 
 
@@ -98,13 +98,13 @@ def colored_log_formatter_factory(fmt=None, datefmt=None, style='%'):
     """
     # 确保控制台颜色已初始化
     init_console_colors()
-    
+
     class ColoredFormatter(logging.Formatter):
         def format(self, record):
             # 获取颜色代码
             level_color = get_level_color(record.levelno)
             reset_code = get_reset_code()
-            
+
             # 如果有颜色代码，应用到日志级别
             if level_color:
                 # 直接修改record的levelname属性为带颜色的版本
@@ -113,14 +113,14 @@ def colored_log_formatter_factory(fmt=None, datefmt=None, style='%'):
                 original_levelname = record.levelname
                 # 设置带颜色的levelname
                 record.levelname = colored_levelname
-            
+
             # 格式化日志记录
             formatted_message = super().format(record)
-            
+
             # 如果修改了levelname，恢复原始值
             if level_color:
                 record.levelname = original_levelname
-            
+
             return formatted_message
-    
+
     return ColoredFormatter(fmt=fmt, datefmt=datefmt, style=style)

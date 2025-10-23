@@ -6,9 +6,8 @@
 @Time: 2025/08 - 2025/11
 """
 import os
-import sys
 
-from hengline.logger import debug, info, error
+from hengline.logger import error
 
 
 def print_large_ascii():
@@ -44,6 +43,7 @@ def print_large_ascii():
     print(hengline_large)
     print(ascii_art)
 
+
 def ensure_directory(path: str) -> bool:
     """
     确保目录存在，如果不存在则创建
@@ -55,6 +55,7 @@ def ensure_directory(path: str) -> bool:
         error(f"创建目录失败: {path}, 错误: {str(e)}")
         return False
 
+
 def get_relative_path(absolute_path: str, base_path: str = None) -> str:
     """
     获取相对路径
@@ -65,6 +66,7 @@ def get_relative_path(absolute_path: str, base_path: str = None) -> str:
         return os.path.relpath(absolute_path, base_path)
     except Exception:
         return absolute_path
+
 
 def is_path_valid(path: str) -> bool:
     """

@@ -1,4 +1,3 @@
-import sys
 """
 @FileName: log_utils.py
 @Description: 日志工具模块，提供异常信息详细打印等功能
@@ -30,7 +29,6 @@ def print_detailed_exception():
         print(f"   ---")
 
     print("🟢" * 50 + "\n")
-
 
 
 def print_log_exception():

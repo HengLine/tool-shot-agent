@@ -63,9 +63,9 @@ class HengLineApp(AppBaseEnv):
             log_level = config.get("logging", {}).get("level", "INFO").lower()
 
             # 当启用reload时，uvicorn不支持多进程模式，自动禁用workers参数
-            if reload and workers > 1:
-                info("警告: 热重载模式(reload=True)不支持多进程，自动将workers设置为1")
-                workers = 1
+            # if reload and workers > 1:
+            #     info("警告: 热重载模式(reload=True)不支持多进程，自动将workers设置为1")
+            #     workers = 1
 
             # 输出启动信息
             info(f"服务器配置: host={host}, port={port}, reload={reload}, workers={workers}")

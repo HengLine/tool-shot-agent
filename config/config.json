@@ -2,7 +2,7 @@
   "app": {
     "name": "Script-to-Shot AI Agent",
     "version": "1.0.0",
-    "debug": true
+    "debug": false
   },
   "api": {
     "host": "0.0.0.0",

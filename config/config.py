@@ -248,8 +248,10 @@ def is_debug_mode() -> bool:
     """
     检查是否为调试模式
     """
-    config = get_settings_config()
-    return config.get("app", {}).get("debug", False)
+    is_debug = os.environ.get("APP_DEBUG")
+    if is_debug:
+        return False if is_debug.lower() in ["0", "false", "no"] else True
+    return get_settings_config().get("app", {}).get("debug", False)
 
 
 def get_supported_styles() -> list:
