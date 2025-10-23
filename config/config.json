@@ -1,0 +1,39 @@
+{
+  "app": {
+    "name": "Script-to-Shot AI Agent",
+    "version": "1.0.0",
+    "debug": true
+  },
+  "api": {
+    "host": "0.0.0.0",
+    "port": 8000,
+    "workers": 1
+  },
+  "llm": {
+    "provider": "openai",
+    "base_url": "https://api.openai.com/v1",
+    "api_key": "",
+    "timeout": 60,
+    "default_model": "gpt-4o",
+    "fallback_model": "gpt-3.5-turbo",
+    "temperature": 0.7,
+    "max_tokens": 2000,
+    "retry_count": 3
+  },
+  "storyboard": {
+    "default_duration_per_shot": 5,
+    "max_duration_deviation": 0.5,
+    "max_retries": 2,
+    "default_style": "realistic",
+    "supported_styles": [
+      "realistic",
+      "anime",
+      "cinematic",
+      "cartoon"
+    ]
+  },
+  "logging": {
+    "level": "INFO",
+    "format": "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+  }
+}
