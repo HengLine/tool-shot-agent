@@ -6,13 +6,14 @@
 @Time: 2025/10 - 2025/11
 """
 import json
+from pathlib import Path
 from typing import Dict, List, Any
 
-from langchain.chains.llm import LLMChain
 # LLMChain在langchain 1.0+中已更改，我们将直接使用模型和提示词
 from langchain_core.prompts import ChatPromptTemplate
 
 from hengline.logger import debug, error, warning
+from hengline.prompts.prompts_manager import PromptManager
 
 
 class ShotGeneratorAgent:
@@ -29,39 +30,64 @@ class ShotGeneratorAgent:
         self._init_prompts()
 
     def _init_prompts(self):
-        """初始化提示词模板"""
-        # 分镜生成提示词模板
-        self.shot_generation_template = ChatPromptTemplate.from_template("""
-你是一位专业的电影分镜师和AI提示词工程师。请根据以下信息，为每一个5秒的短视频片段生成详细的分镜描述和AI提示词。
+        """从YAML文件初始化提示词模板"""
+        import os
+        import yaml
 
-## 任务要求
-1. 生成中文画面描述（供人阅读）
-2. 生成英文AI视频提示词（供AI模型使用）
-3. 确保提示词详细、准确，包含必要的视觉元素
-4. 遵循指定的视频风格
+        # 定义YAML文件路径
+        yaml_file_path = os.path.join(
+            os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+            'prompts', 'shot_generator.yaml'
+        )
 
-## 输入信息
+        try:
+            # 读取YAML文件
+            with open(yaml_file_path, 'r', encoding='utf-8') as f:
+                yaml_content = yaml.safe_load(f)
 
-### 场景信息
+            # 提取模板内容
+            template_content = yaml_content.get('template', '')
+            debug(f"成功从{yaml_file_path}加载提示词模板，版本: {yaml_content.get('version', 'unknown')}")
+
+            # 使用PromptManager获取提示词
+            self.prompt_manager = PromptManager(prompt_dir=Path(__file__).parent.parent)
+
+            # 分镜生成提示词模板 - 从YAML加载或使用默认
+            self.shot_generation_template = ChatPromptTemplate.from_template(template_content)
+
+        except Exception as e:
+            debug(f"无法加载提示词YAML文件，使用默认模板: {e}")
+            # 使用PromptManager获取提示词
+            self.prompt_manager = PromptManager(prompt_dir=Path(__file__).parent.parent)
+
+            # 如果加载失败，使用默认模板作为备份
+            default_template = """
+你是一位顶尖的电影分镜师和AI视频提示词工程师。请为一段5秒的短视频生成专业分镜：
+
+## 场景信息
 场景位置: {location}
 时间: {time}
 氛围: {atmosphere}
 
-### 动作序列
+## 动作序列
 {actions_text}
 
-### 连续性约束
+## 连续性约束
 {continuity_constraints_text}
 
-### 视频风格
+## 视频风格
 {style}
 
-### 分镜ID
+## 分镜ID
 {shot_id}
 
-## 输出格式
-请严格按照以下JSON格式输出，不要添加任何额外的解释或说明：
+## 创作要求
+1. **精确计时**: 确保所有描述的动作能够在5秒内自然流畅地完成
+2. **生动描述**: 中文画面描述要具体、生动
+3. **专业提示词**: 英文AI提示词必须详细精确
 
+## 输出格式要求
+请严格按照以下JSON格式输出：
 {{
   "chinese_description": "详细的中文画面描述",
   "ai_prompt": "详细的英文AI视频提示词",
@@ -70,28 +96,11 @@ class ShotGeneratorAgent:
     "angle": "拍摄角度",
     "movement": "镜头运动"
   }},
-  "initial_state": [
-    {{
-      "character_name": "角色名",
-      "pose": "初始姿势",
-      "position": "初始位置",
-      "holding": "手持物品",
-      "emotion": "初始情绪",
-      "appearance": "角色外观描述"
-    }}
-  ],
-  "final_state": [
-    {{
-      "character_name": "角色名",
-      "pose": "结束姿势",
-      "position": "结束位置",
-      "gaze_direction": "视线方向",
-      "emotion": "结束情绪",
-      "holding": "手持物品"
-    }}
-  ]
+  "initial_state": [{{"character_name": "角色名","pose": "初始姿势","position": "初始位置","holding": "手持物品","emotion": "初始情绪","appearance": "角色外观描述"}}],
+  "final_state": [{{"character_name": "角色名","pose": "结束姿势","position": "结束位置","gaze_direction": "视线方向","emotion": "结束情绪","holding": "手持物品"}}]
 }}
-""")
+"""
+            self.shot_generation_template = ChatPromptTemplate.from_template(default_template)
 
     def generate_shot(self,
                       segment: Dict[str, Any],
@@ -100,7 +109,7 @@ class ShotGeneratorAgent:
                       style: str = "realistic",
                       shot_id: int = 1) -> Dict[str, Any]:
         """
-        生成单个分镜，增强错误处理和字段验证
+        生成单个分镜，使用YAML配置的提示词模板，增强错误处理和字段验证
         
         Args:
             segment: 分段信息
@@ -112,13 +121,13 @@ class ShotGeneratorAgent:
         Returns:
             分镜对象
         """
-        info(f"生成分镜，ID: {shot_id}")
+        debug(f"生成分镜，ID: {shot_id}")
 
         # 准备输入数据
         actions_text = self._format_actions_text(segment.get("actions", []))
         continuity_constraints_text = self._format_continuity_constraints(continuity_constraints)
 
-        # 构建提示词输入
+        # 构建提示词输入，确保所有变量与YAML模板匹配
         prompt_input = {
             "location": scene_context.get("location", "未知位置"),
             "time": scene_context.get("time", "未知时间"),
@@ -131,11 +140,17 @@ class ShotGeneratorAgent:
 
         try:
             if self.llm:
-                debug("使用LLM生成分镜")
+                debug("使用LLM和YAML配置的提示词模板生成分镜")
                 try:
+                    # 直接使用已初始化的ChatPromptTemplate对象
+                    if isinstance(self.shot_generation_template, ChatPromptTemplate):
+                        current_template = self.shot_generation_template
+                    else:
+                        # 如果是字符串，则创建模板
+                        current_template = ChatPromptTemplate.from_template(self.shot_generation_template)
+
                     # 使用LLM生成
-                    # 使用新的RunnableSequence方式替代废弃的LLMChain
-                    chain = self.shot_generation_template | self.llm
+                    chain = current_template | self.llm
                     response = chain.invoke(prompt_input)
                     # 确保获取到content
                     if hasattr(response, 'content'):
@@ -143,8 +158,10 @@ class ShotGeneratorAgent:
 
                     # 解析响应
                     shot_data = json.loads(response)
+                    debug(f"成功解析LLM响应，生成了包含{len(shot_data)}个字段的分镜数据")
                 except json.JSONDecodeError as jde:
                     error(f"LLM响应JSON解析失败: {str(jde)}")
+                    debug(f"原始LLM响应: {response[:200]}...")  # 记录部分原始响应用于调试
                     # 回退到规则生成
                     debug("JSON解析失败，回退到规则生成分镜")
                     shot_data = self._generate_shot_with_rules(segment, continuity_constraints, scene_context, style, shot_id)

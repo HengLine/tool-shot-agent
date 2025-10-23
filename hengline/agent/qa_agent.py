@@ -1,13 +1,16 @@
 # -*- coding: utf-8 -*-
 """
 @FileName: qa_agent.py
-@Description: 质量审查智能体，负责检查分镜是否连贯、是否超时、角色是否漂移
+@Description: 分镜审查智能体，负责审查分镜质量和连续性
 @Author: HengLine
 @Time: 2025/10 - 2025/11
 """
+import json
+from pathlib import Path
 from typing import Dict, List, Any
 
 from hengline.logger import debug, warning
+from hengline.prompts.prompts_manager import PromptManager
 
 
 class QAAgent:
@@ -219,49 +222,37 @@ class QAAgent:
     def _advanced_review_with_llm(self, shot: Dict[str, Any], segment: Dict[str, Any]) -> Dict[str, Any]:
         """使用LLM进行高级审查"""
         try:
-            prompt = f"""
-请作为一位专业的电影导演和AI提示词专家，审查以下分镜内容：
+            # 使用PromptManager获取提示词，使用正确的提示词目录路径
+            prompt_manager = PromptManager(prompt_dir=Path(__file__).parent.parent)
+            prompt = prompt_manager.get_prompt("qa_review")
 
-分镜信息：
-{shot}
+            # 填充提示词模板
+            filled_prompt = prompt.format(
+                shot_info=json.dumps(shot, ensure_ascii=False),
+                segment_info=json.dumps(segment, ensure_ascii=False)
+            )
 
-对应的原始分段信息：
-{segment}
+            # 调用LLM
+            response = self.llm.invoke(filled_prompt)
 
-请检查以下几点：
-1. 分镜是否准确反映了原始分段的内容
-2. 中文描述是否清晰、详细
-3. AI提示词是否包含足够的视觉细节
-4. 角色动作是否自然、合理
-5. 镜头语言是否恰当
-
-请返回以下格式的JSON：
-{{
-  "issues": ["问题1", "问题2"...],
-  "suggestions": ["建议1", "建议2"...]
-}}
-"""
-
-            response = self.llm.invoke(prompt)
             # 处理可能的响应对象
             response_text = response.content if hasattr(response, 'content') else response
-            
+
             # 检查响应是否为空
             if not response_text or not str(response_text).strip():
                 warning("LLM高级审查响应为空")
                 return {"issues": [], "suggestions": []}
-            
+
             # 确保response_text是字符串
             response_text = str(response_text).strip()
-            
+
             # 尝试提取纯JSON部分（移除可能的前后文本）
             if '{' in response_text and '}' in response_text:
                 # 提取第一个{到最后一个}之间的内容
                 start_idx = response_text.find('{')
                 end_idx = response_text.rfind('}') + 1
                 response_text = response_text[start_idx:end_idx]
-            
-            import json
+
             result = json.loads(response_text)
             return result
         except json.JSONDecodeError as e:

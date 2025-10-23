@@ -5,9 +5,11 @@
 @Author: HengLine
 @Time: 2025/10 - 2025/11
 """
+from pathlib import Path
 from typing import List, Dict, Any
 
 from hengline.logger import debug, warning
+from hengline.prompts.prompts_manager import PromptManager
 
 
 class TemporalPlannerAgent:
@@ -15,6 +17,9 @@ class TemporalPlannerAgent:
 
     def __init__(self):
         """初始化时序规划智能体"""
+        # 初始化PromptManager，使用正确的提示词目录路径
+        self.prompt_manager = PromptManager(prompt_dir=Path(__file__).parent.parent)
+
         # 动作时长估算库（秒）
         self.action_duration_library = {
             # 基本动作
@@ -80,6 +85,13 @@ class TemporalPlannerAgent:
         if target_duration:
             self.target_segment_duration = target_duration
 
+        # 获取提示词模板（供后续扩展使用）
+        try:
+            self.timeline_planning_template = self.prompt_manager.get_prompt("temporal_planner")
+        except Exception as e:
+            debug(f"未找到时序规划提示词模板: {e}")
+            # 使用默认处理逻辑
+
         segments = []
         current_segment = {
             "id": 1,
@@ -92,7 +104,7 @@ class TemporalPlannerAgent:
         scenes = structured_script.get("scenes", [])
         for scene_idx, scene in enumerate(scenes):
             scene_actions = scene.get("actions", [])
-            
+
             # 确保场景有动作
             if not scene_actions:
                 # 如果场景没有动作，创建一个默认动作
@@ -143,7 +155,7 @@ class TemporalPlannerAgent:
 
         # 优化分段
         optimized_segments = self._optimize_segments(segments)
-        
+
         # 确保至少有一个分段
         if not optimized_segments and scenes:
             warning("分段优化后为空，创建保底分段")

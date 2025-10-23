@@ -8,8 +8,11 @@
 import json
 import re
 from typing import Dict, List, Any
+from pathlib import Path
 
 from hengline.logger import debug, error, warning
+from hengline.prompts.prompts_manager import PromptManager
+from utils.log_utils import print_log_exception
 
 
 class ScriptParserAgent:
@@ -185,25 +188,26 @@ class ScriptParserAgent:
         使用LLM增强解析结果
         
         Args:
-            structured_script: 结构化的剧本
+            structured_script: 结构化的剧本数据
             
         Returns:
-            增强后的剧本结构
+            增强后的结构化剧本数据
         """
         if not self.llm:
             debug("未配置LLM，跳过增强步骤")
             return structured_script
 
         try:
-            # 构建提示词
-            prompt = f"""请优化以下剧本结构，添加缺失的细节，确保动作描述更准确：
-{structured_script}
+            # 使用PromptManager获取提示词
+            prompt_manager = PromptManager(prompt_dir=Path(__file__).parent.parent)
+            prompt = prompt_manager.get_prompt("script_parser")
 
-请返回优化后的完整JSON结构，不要添加任何额外的解释。"""
+            # 填充提示词模板
+            filled_prompt = prompt.format(raw_script=json.dumps(structured_script, ensure_ascii=False))
 
             # 调用LLM
             debug("开始调用LLM增强剧本解析结果")
-            response = self.llm.invoke(prompt)
+            response = self.llm.invoke(filled_prompt)
 
             # 尝试解析JSON响应
             enhanced_script = json.loads(response)
@@ -212,6 +216,7 @@ class ScriptParserAgent:
         except json.JSONDecodeError as e:
             warning(f"LLM增强失败：响应不是有效的JSON格式: {str(e)}")
         except Exception as e:
+            print_log_exception()
             # 检查是否是API密钥错误
             if "API key" in str(e) or "401" in str(e):
                 warning(f"LLM增强失败：API密钥错误或权限不足: {str(e)}")

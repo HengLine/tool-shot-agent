@@ -7,7 +7,7 @@
 """
 from typing import Dict, List, Any, Optional
 
-from hengline.logger import debug, warning
+from hengline.logger import debug, warning, info
 
 
 class ContinuityGuardianAgent:

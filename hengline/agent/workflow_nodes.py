@@ -7,7 +7,7 @@
 """
 import uuid
 from datetime import datetime
-from typing import Dict, List, Any, Optional
+from typing import Dict, List, Any
 
 from hengline.logger import debug, info, warning, error
 from .workflow_states import StoryboardWorkflowState
@@ -83,7 +83,7 @@ class WorkflowNodes:
             # 检查segments列表是否存在且不为空
             segments = state.get("segments", [])
             current_index = state.get("current_segment_index", 0)
-            
+
             # 确保segments不为空
             if not segments:
                 warning("分段列表为空，创建默认分段")
@@ -103,7 +103,7 @@ class WorkflowNodes:
                 segment = segments[0]
             else:
                 segment = segments[current_index]
-                
+
             shot_id = len(state.get("shots", [])) + 1
 
             # 获取场景上下文，增加安全检查
@@ -292,7 +292,7 @@ class WorkflowNodes:
         actions = segment.get("actions", [])
         characters = []
         dialogue = ""
-        
+
         if actions:
             # 提取角色名称和对话
             for action in actions:
@@ -303,7 +303,7 @@ class WorkflowNodes:
                     dialogue += f"{character_name}: {action['dialogue']}\n"
         else:
             characters = ["默认角色"]
-        
+
         # 返回完整且格式正确的分镜对象，避免字段重复
         return {
             "shot_id": shot_id,
@@ -382,7 +382,7 @@ class WorkflowNodes:
         # 构建元数据
         metadata = {
             "generated_at": datetime.now().isoformat() + "Z",
-            "llm_model": self.llm.model_name if self.llm else "rule_based",
+            "llm_model": "ollama_model" if self.llm and hasattr(self.llm, 'model') else "rule_based",
             "continuity_verified": not sequence_qa["has_continuity_issues"],
             "version": "1.0"
         }
