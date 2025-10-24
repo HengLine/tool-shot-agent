@@ -39,45 +39,54 @@ class QAAgent:
         """
         debug(f"审查分镜，ID: {shot.get('shot_id')}")
 
-        issues = []
+        critical_issues = []  # 关键错误，需要修正
+        warnings = []         # 警告，不阻止继续处理
         suggestions = []
 
         # 检查基本字段
         basic_check = self._check_basic_fields(shot)
-        issues.extend(basic_check["issues"])
+        critical_issues.extend(basic_check["critical_issues"])
+        warnings.extend(basic_check["warnings"])
         suggestions.extend(basic_check["suggestions"])
 
         # 检查时长
         duration_check = self._check_duration(shot)
-        issues.extend(duration_check["issues"])
+        critical_issues.extend(duration_check["critical_issues"])
+        warnings.extend(duration_check["warnings"])
         suggestions.extend(duration_check["suggestions"])
 
         # 检查角色状态
         character_check = self._check_character_states(shot)
-        issues.extend(character_check["issues"])
+        critical_issues.extend(character_check["critical_issues"])
+        warnings.extend(character_check["warnings"])
         suggestions.extend(character_check["suggestions"])
 
         # 检查提示词质量
         prompt_check = self._check_prompt_quality(shot)
-        issues.extend(prompt_check["issues"])
+        critical_issues.extend(prompt_check["critical_issues"])
+        warnings.extend(prompt_check["warnings"])
         suggestions.extend(prompt_check["suggestions"])
 
         # 如果有LLM，进行高级审查
         if self.llm:
             advanced_check = self._advanced_review_with_llm(shot, segment)
-            issues.extend(advanced_check["issues"])
-            suggestions.extend(advanced_check["suggestions"])
+            critical_issues.extend(advanced_check.get("critical_issues", []))
+            warnings.extend(advanced_check.get("warnings", []))
+            suggestions.extend(advanced_check.get("suggestions", []))
 
         result = {
             "shot_id": shot.get("shot_id"),
-            "is_valid": len(issues) == 0,
-            "issues": issues,
+            "is_valid": len(critical_issues) == 0,
+            "critical_issues": critical_issues,
+            "warnings": warnings,
             "suggestions": suggestions
         }
 
-        if issues:
-            warning(f"分镜 {shot.get('shot_id')} 审查发现问题: {issues}")
-        else:
+        if critical_issues:
+            warning(f"分镜 {shot.get('shot_id')} 审查发现关键问题: {critical_issues}")
+        if warnings:
+            debug(f"分镜 {shot.get('shot_id')} 审查发现警告: {warnings}")
+        if not critical_issues and not warnings:
             debug(f"分镜 {shot.get('shot_id')} 审查通过")
 
         return result
@@ -141,38 +150,55 @@ class QAAgent:
 
     def _check_basic_fields(self, shot: Dict[str, Any]) -> Dict[str, Any]:
         """检查基本字段是否完整"""
-        issues = []
+        critical_issues = []
+        warnings = []
         suggestions = []
 
-        required_fields = [
-            "shot_id", "chinese_description", "ai_prompt",
-            "camera", "characters_in_frame"
-        ]
+        # 核心必填字段（缺少会导致功能错误）
+        core_required_fields = ["shot_id", "chinese_description"]
+        # 推荐字段（缺少会影响质量但不阻止继续）
+        recommended_fields = ["ai_prompt", "camera", "characters_in_frame"]
 
-        for field in required_fields:
-            if field not in shot or not shot[field]:
-                issues.append(f"缺少必要字段: {field}")
+        for field in core_required_fields:
+            if field not in shot or (isinstance(shot[field], (str, list)) and not shot[field]):
+                critical_issues.append(f"缺少必要字段: {field}")
                 suggestions.append(f"请添加 {field}")
 
-        return {"issues": issues, "suggestions": suggestions}
+        for field in recommended_fields:
+            if field not in shot or (isinstance(shot[field], (str, list)) and not shot[field]):
+                warnings.append(f"缺少推荐字段: {field}")
+                suggestions.append(f"建议添加 {field}")
+
+        return {"critical_issues": critical_issues, "warnings": warnings, "suggestions": suggestions}
 
     def _check_duration(self, shot: Dict[str, Any]) -> Dict[str, Any]:
         """检查分镜时长"""
-        issues = []
+        critical_issues = []
+        warnings = []
         suggestions = []
 
         time_range = shot.get("time_range_sec", [0, 5])
+        if not isinstance(time_range, list) or len(time_range) != 2:
+            critical_issues.append("时间范围格式错误")
+            suggestions.append("请设置正确的时间范围格式 [开始时间, 结束时间]")
+            return {"critical_issues": critical_issues, "warnings": warnings, "suggestions": suggestions}
+
         duration = time_range[1] - time_range[0]
 
-        if duration > self.max_shot_duration:
-            issues.append(f"分镜时长长于允许的最大值 {self.max_shot_duration} 秒")
+        # 允许一定的容忍度，轻微超出范围只作为警告
+        if duration > self.max_shot_duration + 0.5:
+            critical_issues.append(f"分镜时长长于允许的最大值 {self.max_shot_duration} 秒")
             suggestions.append("请缩短分镜时长或拆分为多个分镜")
+        elif duration > self.max_shot_duration:
+            warnings.append(f"分镜时长略长于推荐值 {self.max_shot_duration} 秒")
+            suggestions.append("建议适当缩短分镜时长")
 
-        return {"issues": issues, "suggestions": suggestions}
+        return {"critical_issues": critical_issues, "warnings": warnings, "suggestions": suggestions}
 
     def _check_character_states(self, shot: Dict[str, Any]) -> Dict[str, Any]:
         """检查角色状态是否合理"""
-        issues = []
+        critical_issues = []
+        warnings = []
         suggestions = []
 
         # 检查初始状态和结束状态
@@ -180,44 +206,75 @@ class QAAgent:
         final_state = shot.get("final_state", [])
         characters_in_frame = shot.get("characters_in_frame", [])
 
-        # 检查角色列表一致性
-        state_characters = set(s.get("character_name") for s in initial_state + final_state)
-        frame_characters = set(characters_in_frame)
+        # 特殊处理电话角色（标记为off-screen）
+        is_phone_scene = any("电话" in action.get("action", "") for action in shot.get("actions", []))
+        phone_characters = []
+        if is_phone_scene:
+            for character in characters_in_frame:
+                if "电话" in character or "对面" in character:
+                    phone_characters.append(character)
 
-        if state_characters != frame_characters:
-            issues.append("角色列表不一致")
-            suggestions.append("确保 initial_state、final_state 和 characters_in_frame 中的角色一致")
+        # 构建角色状态映射
+        initial_char_map = {s.get("character_name"): s for s in initial_state}
+        final_char_map = {s.get("character_name"): s for s in final_state}
+        all_state_characters = set(initial_char_map.keys()) | set(final_char_map.keys())
+
+        # 检查画面内角色是否都有状态信息
+        for character in characters_in_frame:
+            if character not in phone_characters and character not in all_state_characters:
+                warnings.append(f"角色 {character} 缺少状态信息")
+                suggestions.append(f"建议添加 {character} 的状态信息")
 
         # 检查角色状态的合理性
-        for state in initial_state + final_state:
-            if "pose" not in state:
-                issues.append(f"角色 {state.get('character_name')} 缺少姿势信息")
-            if "emotion" not in state:
-                issues.append(f"角色 {state.get('character_name')} 缺少情绪信息")
-            if "position" not in state:
-                issues.append(f"角色 {state.get('character_name')} 缺少位置信息")
+        for character_name, state in {**initial_char_map, **final_char_map}.items():
+            # 电话角色的特殊规则
+            if character_name in phone_characters:
+                if state.get("position") != "off-screen":
+                    warnings.append(f"电话角色 {character_name} 位置应为 'off-screen'")
+                    suggestions.append(f"设置 {character_name} 的位置为 'off-screen'")
+            else:
+                # 普通角色的状态检查
+                if "position" not in state:
+                    critical_issues.append(f"角色 {character_name} 缺少位置信息")
+                    suggestions.append(f"请添加 {character_name} 的位置信息")
+                # 姿势和情绪信息降级为警告
+                if "pose" not in state:
+                    warnings.append(f"角色 {character_name} 缺少姿势信息")
+                    suggestions.append(f"建议添加 {character_name} 的姿势信息")
+                if "emotion" not in state:
+                    warnings.append(f"角色 {character_name} 缺少情绪信息")
+                    suggestions.append(f"建议添加 {character_name} 的情绪信息")
 
-        return {"issues": issues, "suggestions": suggestions}
+        return {"critical_issues": critical_issues, "warnings": warnings, "suggestions": suggestions}
 
     def _check_prompt_quality(self, shot: Dict[str, Any]) -> Dict[str, Any]:
         """检查提示词质量"""
-        issues = []
+        critical_issues = []
+        warnings = []
         suggestions = []
 
         ai_prompt = shot.get("ai_prompt", "")
 
-        # 检查提示词长度
-        if len(ai_prompt) < 20:
-            issues.append("AI提示词过短")
-            suggestions.append("请添加更多细节到提示词")
+        # 提示词为空是警告级别
+        if not ai_prompt:
+            warnings.append("AI提示词为空")
+            suggestions.append("请添加AI提示词以提高生成质量")
+        else:
+            # 检查提示词长度，轻微过短只作为警告
+            if len(ai_prompt) < 10:
+                critical_issues.append("AI提示词过短")
+                suggestions.append("请添加更多细节到提示词")
+            elif len(ai_prompt) < 20:
+                warnings.append("AI提示词较短")
+                suggestions.append("建议添加更多细节到提示词")
 
-        # 检查是否包含必要元素
-        essential_elements = ["shot", "lighting", "style"]
-        for element in essential_elements:
-            if element not in ai_prompt.lower():
-                suggestions.append(f"建议在提示词中添加 {element} 相关描述")
+            # 检查是否包含必要元素
+            essential_elements = ["shot", "lighting", "style"]
+            for element in essential_elements:
+                if element not in ai_prompt.lower():
+                    suggestions.append(f"建议在提示词中添加 {element} 相关描述")
 
-        return {"issues": issues, "suggestions": suggestions}
+        return {"critical_issues": critical_issues, "warnings": warnings, "suggestions": suggestions}
 
     def _advanced_review_with_llm(self, shot: Dict[str, Any], segment: Dict[str, Any]) -> Dict[str, Any]:
         """使用LLM进行高级审查"""
@@ -280,13 +337,18 @@ class QAAgent:
 
     def _check_character_continuity(self, prev_shot: Dict[str, Any], current_shot: Dict[str, Any]) -> Dict[str, Any]:
         """检查角色连续性"""
-        issues = []
+        critical_issues = []
+        warnings = []
         suggestions = []
 
         # 获取前一个分镜的结束状态和当前分镜的初始状态
         prev_final_state = {s.get("character_name"): s for s in prev_shot.get("final_state", [])}
         current_initial_state = {s.get("character_name"): s for s in current_shot.get("initial_state", [])}
 
+        # 特殊处理电话场景
+        is_prev_phone = any("电话" in action.get("action", "") for action in prev_shot.get("actions", []))
+        is_current_phone = any("电话" in action.get("action", "") for action in current_shot.get("actions", []))
+        
         # 检查共同角色
         common_characters = set(prev_final_state.keys()) & set(current_initial_state.keys())
 
@@ -294,21 +356,53 @@ class QAAgent:
             prev_state = prev_final_state[character]
             current_state = current_initial_state[character]
 
-            # 检查位置连续性
-            if prev_state.get("position") != current_state.get("position"):
-                issues.append(f"角色 {character} 位置不连续")
-                suggestions.append(f"确保 {character} 的位置从 '{prev_state.get('position')}' 平滑过渡到 '{current_state.get('position')}'")
+            # 电话角色特殊处理
+            is_phone_character = "电话" in character or "对面" in character
+            
+            # 检查位置连续性（允许合理的位置变化）
+            prev_pos = prev_state.get("position")
+            current_pos = current_state.get("position")
+            
+            if is_phone_character:
+                # 电话角色位置应该始终为off-screen
+                if prev_pos != "off-screen" and current_pos != "off-screen":
+                    warnings.append(f"电话角色 {character} 位置应为 'off-screen'")
+                    suggestions.append(f"设置 {character} 的位置为 'off-screen'")
+            elif prev_pos and current_pos and prev_pos != current_pos:
+                # 允许合理的位置变化（例如：站立->坐下、门口->窗边等）
+                # 只有剧烈的位置变化才作为警告
+                剧烈变化 = [
+                    ("客厅", "卧室"), ("卧室", "客厅"),
+                    ("室内", "室外"), ("室外", "室内")
+                ]
+                if (prev_pos, current_pos) in 剧烈变化 or (current_pos, prev_pos) in 剧烈变化:
+                    warnings.append(f"角色 {character} 位置变化较大")
+                    suggestions.append(f"确保 {character} 的位置变化有合理过渡")
 
             # 检查情绪连续性
             prev_emotion = prev_state.get("emotion")
             current_emotion = current_state.get("emotion")
-            if prev_emotion != current_emotion:
+            if prev_emotion and current_emotion and prev_emotion != current_emotion:
                 # 检查是否是合理的情绪过渡
                 if not self._is_valid_emotion_transition(prev_emotion, current_emotion):
-                    issues.append(f"角色 {character} 情绪过渡不合理")
+                    warnings.append(f"角色 {character} 情绪过渡可能不合理")
                     suggestions.append(f"建议添加 {character} 的情绪过渡描述")
 
-        return {"issues": issues, "suggestions": suggestions}
+        # 检查角色突然出现或消失
+        prev_characters = set(prev_final_state.keys())
+        current_characters = set(current_initial_state.keys())
+        
+        new_characters = current_characters - prev_characters
+        if new_characters:
+            warnings.append(f"新角色突然出现: {', '.join(new_characters)}")
+            suggestions.append("建议添加角色入场的自然过渡")
+            
+        disappeared_characters = prev_characters - current_characters
+        if disappeared_characters:
+            warnings.append(f"角色突然消失: {', '.join(disappeared_characters)}")
+            suggestions.append("建议添加角色退场的自然过渡")
+
+        return {"critical_issues": critical_issues, "warnings": warnings, "suggestions": suggestions}
 
     def _check_scene_continuity(self, prev_shot: Dict[str, Any], current_shot: Dict[str, Any]) -> Dict[str, Any]:
         """检查场景连续性"""

@@ -32,17 +32,17 @@ class ContinuityGuardianAgent:
                                         prev_continuity_state: Optional[Dict[str, Any]] = None,
                                         scene_context: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
         """
-        生成连续性约束条件
+        Generate continuity constraints
         
         Args:
-            segment: 当前分段
-            prev_continuity_state: 上一段的连续性状态
-            scene_context: 场景上下文
+            segment: Current segment
+            prev_continuity_state: Previous segment's continuity state
+            scene_context: Scene context
             
         Returns:
-            连续性约束条件
+            Continuity constraints
         """
-        info(f"生成连续性约束，分段ID: {segment.get('id')}")
+        info(f"Generating continuity constraints, segment ID: {segment.get('id')}")
 
         # 初始化结果
         continuity_constraints = {
@@ -51,21 +51,56 @@ class ContinuityGuardianAgent:
             "camera": {}
         }
 
+        # 获取分段中的角色
+        actions = segment.get("actions", [])
+        character_names = set()
+        phone_characters = set()  # 存储电话那头的角色
+        
+        for action in actions:
+            character_name = action.get("character")
+            if character_name:
+                if "phone caller" in character_name.lower() or "off-screen" in character_name:
+                    phone_characters.add(character_name)
+                else:
+                    character_names.add(character_name)
+
         # 如果有上一段的状态，加载它
         if prev_continuity_state:
             self._load_prev_state(prev_continuity_state)
 
-        # 获取当前分段中的角色
-        characters_in_segment = self._extract_characters(segment)
+        # 如果有上一段状态，使用它作为约束
+        if prev_continuity_state:
+            for character_name, state in prev_continuity_state.items():
+                # 确保这个角色在当前分段中
+                if character_name in character_names:
+                    constraints = self._generate_character_constraints(character_name, state)
+                    continuity_constraints["characters"][character_name] = constraints
+        else:
+            # 为每个角色生成初始约束
+            for character_name in character_names:
+                # 从第一个动作中提取初始状态
+                initial_action = next((a for a in actions if a.get("character") == character_name), None)
+                initial_state = self._get_character_state(character_name)  # 使用默认状态
+                
+                # 生成约束
+                constraints = self._generate_character_constraints(character_name, initial_state)
+                continuity_constraints["characters"][character_name] = constraints
 
-        # 为每个角色生成连续性约束
-        for character_name in characters_in_segment:
-            # 获取角色的最新状态
-            character_state = self._get_character_state(character_name)
+                # 保存初始状态到记忆
+                self.character_states[character_name] = initial_state
 
-            # 根据当前动作更新状态
-            current_actions = [a for a in segment.get('actions', []) if a.get('character') == character_name]
-            updated_state = self._update_character_state(character_state, current_actions)
+        # 更新每个角色的状态
+        for character_name in character_names:
+            # 获取角色在本分段中的所有动作
+            character_actions = [a for a in actions if a.get("character") == character_name]
+            
+            # 如果角色已经有状态，更新它
+            if character_name in self.character_states:
+                character_state = self.character_states[character_name]
+                updated_state = self._update_character_state(character_state, character_actions)
+            else:
+                # 如果没有状态，使用默认状态
+                updated_state = self._get_character_state(character_name)
 
             # 生成约束
             constraints = self._generate_character_constraints(character_name, updated_state)
@@ -73,34 +108,60 @@ class ContinuityGuardianAgent:
 
             # 更新记忆中的状态
             self.character_states[character_name] = updated_state
+        
+        # 为电话那头的角色添加特殊约束
+        for phone_character in phone_characters:
+            phone_constraints = {
+                "must_start_with_pose": "standing",
+                "must_start_with_position": "off-screen",  # Ensure position is off-screen
+                "must_start_with_emotion": "unknown",
+                "must_start_with_gaze": "forward",
+                "must_start_with_holding": "nothing",
+                "character_description": f"{phone_character}, exists only through voice"
+            }
+            continuity_constraints["characters"][phone_character] = phone_constraints
 
         # 生成场景和相机约束
         continuity_constraints["camera"] = self._generate_camera_constraints(segment)
 
-        debug(f"连续性约束生成完成: {continuity_constraints}")
+        debug(f"Continuity constraints generated: {continuity_constraints}")
         return continuity_constraints
 
     def extract_continuity_anchor(self,
                                   segment: Dict[str, Any],
                                   generated_shot: Dict[str, Any]) -> List[Dict[str, Any]]:
         """
-        从生成的分镜中提取连续性锚点
+        Extract continuity anchors from generated shot
         
         Args:
-            segment: 分段信息
-            generated_shot: 生成的分镜
+            segment: Segment information
+            generated_shot: Generated shot
             
         Returns:
-            连续性锚点列表
+            List of continuity anchors
         """
-        debug(f"提取连续性锚点，分镜ID: {generated_shot.get('shot_id')}")
+        debug(f"Extracting continuity anchors, shot ID: {generated_shot.get('shot_id')}")
 
         anchors = []
 
-        # 从分镜中提取角色状态
-        characters_in_frame = generated_shot.get("characters_in_frame", [])
+        # 获取所有角色（包括final_state中的）
+        all_characters = set()
+        if "final_state" in generated_shot:
+            for state in generated_shot["final_state"]:
+                if state.get("character_name"):
+                    all_characters.add(state.get("character_name"))
+        
+        # 如果没有从final_state获取到角色，尝试从initial_state获取
+        if not all_characters and "initial_state" in generated_shot:
+            for state in generated_shot["initial_state"]:
+                if state.get("character_name"):
+                    all_characters.add(state.get("character_name"))
+        
+        # 如果还是没有，使用characters_in_frame
+        if not all_characters:
+            all_characters = set(generated_shot.get("characters_in_frame", []))
 
-        for character_name in characters_in_frame:
+        for character_name in all_characters:
             # 构建锚点
             anchor = {
                 "character_name": character_name,
@@ -115,9 +176,14 @@ class ContinuityGuardianAgent:
             if "final_state" in generated_shot:
                 for state in generated_shot["final_state"]:
                     if state.get("character_name") == character_name:
+                        # For phone caller character, ensure position is off-screen
+                        position = state.get("position", "unknown")
+                        if "phone caller" in character_name.lower() or "off-screen" in character_name:
+                            position = "off-screen"
+                        
                         anchor.update({
                             "pose": state.get("pose", "unknown"),
-                            "position": state.get("position", "unknown"),
+                            "position": position,
                             "gaze_direction": state.get("gaze_direction", "unknown"),
                             "emotion": state.get("emotion", "unknown"),
                             "holding": state.get("holding", "unknown")
@@ -130,26 +196,48 @@ class ContinuityGuardianAgent:
                     if existing_anchor.get("character_name") == character_name:
                         anchor.update(existing_anchor)
                         break
+            # 从initial_state提取（如果final_state中没有）
+            if anchor["pose"] == "unknown" and "initial_state" in generated_shot:
+                for state in generated_shot["initial_state"]:
+                    if state.get("character_name") == character_name:
+                        # 对于电话那头的角色，确保位置是off-screen
+                        position = state.get("position", "unknown")
+                        if "电话那头" in character_name or "off-screen" in character_name:
+                            position = "off-screen"
+                        
+                        anchor.update({
+                            "pose": state.get("pose", "unknown"),
+                            "position": position,
+                            "gaze_direction": state.get("gaze_direction", "unknown"),
+                            "emotion": state.get("emotion", "unknown"),
+                            "holding": state.get("holding", "unknown")
+                        })
+                        break
+
+            # Special handling for phone caller character
+            if "phone caller" in character_name.lower() or "off-screen" in character_name:
+                anchor["position"] = "off-screen"
+                anchor["pose"] = "off-screen"
 
             anchors.append(anchor)
 
-        debug(f"连续性锚点提取完成: {anchors}")
+        debug(f"Continuity anchors extracted: {anchors}")
         return anchors
 
     def verify_continuity(self,
                           prev_anchor: List[Dict[str, Any]],
                           current_constraints: Dict[str, Any]) -> Dict[str, Any]:
         """
-        验证连续性，检查是否有不一致的地方
+        Verify continuity and check for inconsistencies
         
         Args:
-            prev_anchor: 上一段的连续性锚点
-            current_constraints: 当前段的连续性约束
+            prev_anchor: Previous segment's continuity anchors
+            current_constraints: Current segment's continuity constraints
             
         Returns:
-            验证结果和修正建议
+            Verification results and correction suggestions
         """
-        debug("验证连续性")
+        debug("Verifying continuity")
 
         issues = []
         suggestions = []
@@ -164,20 +252,20 @@ class ContinuityGuardianAgent:
 
                 # 检查姿势连续性
                 if prev_state.get("pose") != constraints.get("must_start_with_pose"):
-                    issues.append(f"角色 {character_name} 姿势不连续")
-                    suggestions.append(f"修正 {character_name} 的初始姿势为: {prev_state.get('pose')}")
+                    issues.append(f"Character {character_name} pose discontinuity")
+                    suggestions.append(f"Correct {character_name}'s initial pose to: {prev_state.get('pose')}")
 
                 # 检查位置连续性
                 if prev_state.get("position") != constraints.get("must_start_with_position"):
-                    issues.append(f"角色 {character_name} 位置不连续")
-                    suggestions.append(f"修正 {character_name} 的初始位置为: {prev_state.get('position')}")
+                    issues.append(f"Character {character_name} position discontinuity")
+                    suggestions.append(f"Correct {character_name}'s initial position to: {prev_state.get('position')}")
 
                 # 检查情绪连续性
                 if prev_state.get("emotion") != constraints.get("must_start_with_emotion"):
                     # 情绪可以有变化，但应该是合理的过渡
                     if not self._is_emotion_transition_valid(prev_state.get("emotion"), constraints.get("must_start_with_emotion")):
-                        issues.append(f"角色 {character_name} 情绪变化不合理")
-                        suggestions.append(f"建议添加情绪过渡")
+                        issues.append(f"Character {character_name} emotion transition unreasonable")
+                    suggestions.append(f"Suggest adding emotion transition")
 
         result = {
             "is_continuous": len(issues) == 0,
@@ -186,21 +274,21 @@ class ContinuityGuardianAgent:
         }
 
         if issues:
-            warning(f"连续性验证发现问题: {issues}")
+            warning(f"Continuity verification found issues: {issues}")
         else:
-            debug("连续性验证通过")
+            debug("Continuity verification passed")
 
         return result
 
     def _load_prev_state(self, prev_continuity_state: List[Dict[str, Any]]):
-        """加载上一段的连续性状态"""
+        """Load previous segment's continuity state"""
         for state in prev_continuity_state:
             character_name = state.get("character_name")
             if character_name:
                 self.character_states[character_name] = state
 
     def _extract_characters(self, segment: Dict[str, Any]) -> List[str]:
-        """提取分段中的所有角色"""
+        """Extract all characters from segment"""
         characters = set()
         for action in segment.get("actions", []):
             if "character" in action:
@@ -208,7 +296,7 @@ class ContinuityGuardianAgent:
         return list(characters)
 
     def _get_character_state(self, character_name: str) -> Dict[str, Any]:
-        """获取角色的当前状态"""
+        """Get current state of character"""
         if character_name in self.character_states:
             return self.character_states[character_name].copy()
         else:
@@ -219,7 +307,7 @@ class ContinuityGuardianAgent:
             }
 
     def _update_character_state(self, state: Dict[str, Any], actions: List[Dict[str, Any]]) -> Dict[str, Any]:
-        """根据动作更新角色状态"""
+        """Update character state based on actions"""
         updated_state = state.copy()
 
         for action in actions:
@@ -228,31 +316,31 @@ class ContinuityGuardianAgent:
                 action_text = action["action"]
 
                 # 更新姿势
-                if "坐在" in action_text:
+                if "sitting" in action_text:
                     updated_state["pose"] = "sitting"
-                elif "站在" in action_text:
+                elif "standing" in action_text:
                     updated_state["pose"] = "standing"
-                elif "躺着" in action_text:
+                elif "lying" in action_text:
                     updated_state["pose"] = "lying"
-                elif "低头" in action_text:
+                elif "look down" in action_text:
                     updated_state["gaze_direction"] = "downward"
-                elif "抬头" in action_text:
+                elif "look up" in action_text:
                     updated_state["gaze_direction"] = "upward"
-                elif "看向" in action_text or "看见" in action_text:
+                elif "look at" in action_text or "see" in action_text:
                     updated_state["gaze_direction"] = "toward object"
 
                 # 更新位置
-                if "靠窗" in action_text:
+                if "window" in action_text:
                     updated_state["position"] = "by window"
-                elif "门口" in action_text:
+                elif "door" in action_text:
                     updated_state["position"] = "near entrance"
-                elif "桌" in action_text:
+                elif "table" in action_text:
                     updated_state["position"] = "at table"
 
                 # 更新手持物品
-                if "手机" in action_text:
+                if "phone" in action_text or "mobile" in action_text:
                     updated_state["holding"] = "smartphone"
-                elif "咖啡" in action_text:
+                elif "coffee" in action_text:
                     updated_state["holding"] = "coffee cup"
 
             # 更新情绪
@@ -262,7 +350,7 @@ class ContinuityGuardianAgent:
         return updated_state
 
     def _generate_character_constraints(self, character_name: str, state: Dict[str, Any]) -> Dict[str, Any]:
-        """生成角色的连续性约束"""
+        """Generate continuity constraints for character"""
         return {
             "must_start_with_pose": state.get("pose", "unknown"),
             "must_start_with_position": state.get("position", "unknown"),
@@ -273,14 +361,14 @@ class ContinuityGuardianAgent:
         }
 
     def _generate_character_description(self, character_name: str, state: Dict[str, Any]) -> str:
-        """生成角色描述"""
-        # 这里可以根据需要生成更详细的角色描述
-        # 暂时使用简单的描述模板
+        """Generate character description"""
+        # Can generate more detailed character description as needed
+        # Temporarily using simple description template
         return f"{character_name}, {state.get('pose')}, {state.get('emotion')}"
 
     def _generate_camera_constraints(self, segment: Dict[str, Any]) -> Dict[str, Any]:
-        """生成相机约束"""
-        # 简单的相机约束逻辑
+        """Generate camera constraints"""
+        # Simple camera constraint logic
         num_actions = len(segment.get("actions", []))
 
         if num_actions == 1:
@@ -297,17 +385,17 @@ class ContinuityGuardianAgent:
         }
 
     def _is_emotion_transition_valid(self, prev_emotion: str, current_emotion: str) -> bool:
-        """检查情绪过渡是否合理"""
-        # 定义合理的情绪过渡对
+        """Check if emotion transition is valid"""
+        # Define valid emotion transition pairs
         valid_transitions = {
-            "平静": ["惊讶", "注意", "思考", "微笑"],
-            "惊讶": ["震惊", "恐惧", "困惑", "平静"],
-            "震惊": ["恐惧", "悲伤", "愤怒", "平静"],
-            "愤怒": ["攻击", "冷静", "悲伤"],
-            "悲伤": ["哭泣", "平静", "接受"],
-            "快乐": ["大笑", "平静", "兴奋"],
-            "紧张": ["焦虑", "恐惧", "平静"],
-            "恐惧": ["逃跑", "震惊", "平静"],
+            "calm": ["surprised", "attentive", "thinking", "smiling"],
+            "surprised": ["shocked", "fearful", "confused", "calm"],
+            "shocked": ["fearful", "sad", "angry", "calm"],
+            "angry": ["aggressive", "calm", "sad"],
+            "sad": ["crying", "calm", "accepting"],
+            "happy": ["laughing", "calm", "excited"],
+            "nervous": ["anxious", "fearful", "calm"],
+            "fearful": ["running", "shocked", "calm"],
         }
 
         # 如果当前情绪在合理过渡列表中，或者没有定义过渡规则，则认为有效
