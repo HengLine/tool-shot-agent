@@ -27,7 +27,7 @@ class ActionDurationEstimator:
     - 动作/对话内部逻辑与角色完全解耦
     """
 
-    def __init__(self, config_path: str = "config/action_duration.yaml"):
+    def __init__(self, config_path: str = "../config/action_duration_config.yaml"):
         global _current_config, _config_path
         self.config_path = Path(config_path)
 
@@ -176,7 +176,7 @@ class ActionDurationEstimator:
         self.estimate.cache_clear()
 
     @classmethod
-    def reload_config(cls, config_path: str = "../config/action_duration.yaml"):
+    def reload_config(cls, config_path: str = "../config/action_duration_config.yaml"):
         """热重载配置"""
         global _current_config, _config_path
         with _config_lock:

@@ -156,7 +156,7 @@ def generate_storyboard_segments(script: str, min_shots: int = 5, max_shots: int
         优化后的分段列表
     """
     # 初始化估算器
-    estimator = ActionDurationEstimator("../config/action_duration.yaml")
+    estimator = ActionDurationEstimator("../config/action_duration_config.yaml")
     estimator.clear_cache()
     
     # 提取动作
@@ -219,7 +219,7 @@ if __name__ == '__main__':
     print("=== 动作时长估算和分镜切分示例 ===")
     
     # 初始化估算器（单例推荐）
-    estimator = ActionDurationEstimator("./config/action_duration.yaml")
+    estimator = ActionDurationEstimator("./config/action_duration_config.yaml")
     estimator.clear_cache()
     
     # 演示基础用法

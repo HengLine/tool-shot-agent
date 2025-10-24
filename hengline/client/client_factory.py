@@ -22,7 +22,7 @@ from hengline.client.qwen_client import QwenClient
 from hengline.logger import error, debug, warning
 
 
-class AIClientFactory:
+class ClientFactory:
     """AI客户端工厂类，负责统一调用不同厂商的客户端实现"""
 
     # 支持的提供商列表
@@ -136,7 +136,7 @@ class AIClientFactory:
 
 
 # 创建全局工厂实例
-ai_client_factory = AIClientFactory()
+ai_client_factory = ClientFactory()
 
 
 def get_ai_client(provider: Optional[str] = None, config: Optional[Dict[str, Any]] = None) -> Any:

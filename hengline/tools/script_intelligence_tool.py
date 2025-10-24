@@ -19,7 +19,7 @@ from hengline.tools.script_parser_tool import (
 from llama_index.core.retrievers import BaseRetriever
 
 from hengline.logger import debug, info, error, warning
-from hengline.tools.llama_index_tool import get_embedding_model
+from hengline.client.embedding_client import get_embedding_model
 from hengline.tools.script_knowledge_tool import (
     create_script_knowledge_base
 )
@@ -32,7 +32,8 @@ class ScriptIntelligence:
     """
 
     def __init__(self,
-                 embedding_model_name: str = "openai",
+                 embedding_model_type: str = "openai",
+                 embedding_model_name: Optional[str] = None,
                  embedding_model_config: Optional[Dict[str, Any]] = None,
                  storage_dir: Optional[str] = None,
                  chunk_size: int = 512,
@@ -41,12 +42,14 @@ class ScriptIntelligence:
         初始化剧本智能分析工具
         
         Args:
-            embedding_model_name: 嵌入模型名称 (openai, huggingface, ollama)
+            embedding_model_type: 嵌入模型类型 (openai, huggingface, ollama)
+            embedding_model_name: 嵌入模型名称（具体模型标识）
             embedding_model_config: 嵌入模型配置参数
             storage_dir: 知识库存储目录
             chunk_size: 文本分块大小
             chunk_overlap: 文本块重叠大小
         """
+        self.embedding_model_type = embedding_model_type
         self.embedding_model_name = embedding_model_name
         self.embedding_model_config = embedding_model_config or {}
         self.storage_dir = storage_dir
@@ -60,11 +63,20 @@ class ScriptIntelligence:
 
         # 初始化嵌入模型
         try:
+            # 准备参数
+            model_kwargs = {}
+            if embedding_model_name:
+                model_kwargs["model"] = embedding_model_name
+
+            # 合并配置
+            merged_config = {**self.embedding_model_config, **model_kwargs}
+
             self.embedding_model = get_embedding_model(
-                model_type=embedding_model_name,
-                **embedding_model_config
+                model_type=embedding_model_type,
+                model_name=embedding_model_name,
+                **merged_config
             )
-            debug(f"初始化嵌入模型成功: {embedding_model_name}")
+            debug(f"初始化嵌入模型成功: {embedding_model_type}{f'/{embedding_model_name}' if embedding_model_name else ''}")
         except Exception as e:
             warning(f"初始化嵌入模型失败，将在需要时重新尝试: {str(e)}")
 
@@ -527,7 +539,8 @@ class ScriptIntelligence:
 
 
 def create_script_intelligence(
-        embedding_model_name: str = "openai",
+        embedding_model_type: Optional[str] = None,
+        embedding_model_name: Optional[str] = None,
         embedding_model_config: Optional[Dict[str, Any]] = None,
         storage_dir: Optional[str] = None
 ) -> ScriptIntelligence:
@@ -535,14 +548,30 @@ def create_script_intelligence(
     创建剧本智能分析实例
     
     Args:
-        embedding_model_name: 嵌入模型名称
+        embedding_model_type: 嵌入模型类型 (openai, huggingface, ollama)，如果为None则从配置中读取
+        embedding_model_name: 嵌入模型名称（具体模型标识）
         embedding_model_config: 嵌入模型配置
         storage_dir: 存储目录
         
     Returns:
         剧本智能分析实例
     """
+    # 导入配置函数
+    from config.config import get_embedding_config
+
+    # 处理向后兼容情况：如果只提供了embedding_model_name且它是模型类型
+    # （openai, huggingface, ollama），则将其视为model_type
+    embedding_config = get_embedding_config()
+
+    # 如果embedding_model_type为None，则从配置中读取
+    if embedding_model_type is None:
+        embedding_model_type = embedding_config.get("provider", "openai")
+        debug(f"从配置中读取嵌入模型类型: {embedding_model_type}")
+
+    embedding_model_config = embedding_model_config or embedding_config
+
     return ScriptIntelligence(
+        embedding_model_type=embedding_model_type,
         embedding_model_name=embedding_model_name,
         embedding_model_config=embedding_model_config,
         storage_dir=storage_dir
@@ -557,7 +586,7 @@ def analyze_script(script_path_or_text: str, is_file: bool = True, **kwargs) -> 
     Args:
         script_path_or_text: 剧本文件路径或文本内容
         is_file: 是否是文件路径
-        **kwargs: 其他参数
+        **kwargs: 其他参数，支持embedding_model_type、embedding_model_name等
         
     Returns:
         分析结果

@@ -8,6 +8,8 @@
 import json
 import os
 
+# 嵌入模型获取
+from hengline.client.embedding_client import get_embedding_model
 # 导入工具模块
 from hengline.tools import (
     # 剧本智能分析主类
@@ -16,9 +18,6 @@ from hengline.tools import (
     ScriptParser,
     # 剧本知识库
     create_script_knowledge_base,
-
-    # 嵌入模型获取
-    get_embedding_model
 )
 
 

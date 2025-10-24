@@ -7,7 +7,7 @@
 from typing import Dict, Any, Optional
 
 from hengline.agent import MultiAgentPipeline
-from hengline.logger import debug, warning
+from hengline.logger import warning, info
 
 
 # 对外暴露的主函数
@@ -15,7 +15,8 @@ def generate_storyboard(
         script_text: str,
         style: str = "realistic",
         duration_per_shot: int = 5,
-        prev_continuity_state: Optional[Dict[str, Any]] = None
+        prev_continuity_state: Optional[Dict[str, Any]] = None,
+        task_id: Optional[str] = None
 ) -> Dict[str, Any]:
     """
     剧本分镜生成主接口（可嵌入 LangGraph 或 A2A 调用）
@@ -41,7 +42,7 @@ def generate_storyboard(
         model = ai_config.get("default_model", "gpt-4o")
         temperature = ai_config.get("temperature", 0.7)
 
-        debug(f"使用AI提供商: {provider}, 模型: {model}")
+        info(f"使用AI提供商: {provider}, 模型: {model}")
 
         # 创建完整的LLM配置
         llm_config = {
@@ -52,11 +53,11 @@ def generate_storyboard(
 
         # 使用client_factory获取对应的LangChain LLM实例
         llm = ai_client_factory.get_langchain_llm(provider=provider, config=llm_config)
-        
+
         if not llm:
-            warning(f"未能获取 {provider} 的LLM实例，将使用规则引擎模式")
+            warning(f"AI模型初始化失败（未能获取 {provider} 的LLM实例），系统将自动使用规则引擎模式继续工作")
     except Exception as e:
-        warning(f"无法初始化LLM，将使用规则引擎模式: {str(e)}")
+        warning(f"AI模型初始化失败（错误: {str(e)}），系统将自动使用规则引擎模式继续工作")
 
     # 创建并运行多智能体管道
     pipeline = MultiAgentPipeline(llm=llm)
@@ -64,5 +65,6 @@ def generate_storyboard(
         script_text=script_text,
         style=style,
         duration_per_shot=duration_per_shot,
+        task_id=task_id,
         prev_continuity_state=prev_continuity_state
     )

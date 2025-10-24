@@ -5,6 +5,7 @@
 @Time: 2025/10/23 11:19
 """
 from typing import Optional, Dict, Any, List
+import uuid
 
 from fastapi import APIRouter
 from fastapi import HTTPException
@@ -25,7 +26,8 @@ class StoryboardRequest(BaseModel):
     style: str = "realistic"
     duration_per_shot: int = 5
     prev_continuity_state: Optional[Dict[str, Any]] = None
-    debug: bool = False
+    # 唯一请求ID，默认生成UUID
+    task_id: str = str(uuid.uuid4())
 
 
 # 定义响应模型
@@ -60,7 +62,7 @@ class StoryboardResponse(BaseModel):
 
 
 @app.post("/generate_storyboard", response_model=StoryboardResponse)
-def a2a_storyboard(request: StoryboardRequest):
+def generate_storyboard_api(request: StoryboardRequest):
     """
     通过A2A协议调用分镜生成功能
 
@@ -87,7 +89,8 @@ def a2a_storyboard(request: StoryboardRequest):
             script_text=request.script_text,
             style=request.style,
             duration_per_shot=request.duration_per_shot,
-            prev_continuity_state=request.prev_continuity_state
+            prev_continuity_state=request.prev_continuity_state,
+            task_id=request.task_id
         )
 
         # 确保结果包含必要字段

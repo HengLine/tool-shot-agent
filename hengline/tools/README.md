@@ -98,12 +98,13 @@ stats = knowledge_base.get_statistics()
 ### 4. 使用剧本智能分析
 
 ```python
-from hengline.tool import ScriptIntelligence
+from hengline.tools.script_intelligence_tool import ScriptIntelligence
 
 # 创建智能分析对象
 script_ai = ScriptIntelligence(
     storage_dir="./script_intelligence",
-    embedding_model_type="huggingface"
+    embedding_model_type="huggingface",
+    embedding_model_name="BAAI/bge-small-zh-v1.5"
 )
 
 # 分析剧本文本
@@ -192,7 +193,7 @@ character_relationships = script_ai.get_character_relationships()
 ### 剧本分析与检索
 
 ```python
-from hengline.tool import ScriptIntelligence
+from hengline.tools.script_intelligence_tool import ScriptIntelligence
 
 # 创建智能分析对象
 script_ai = ScriptIntelligence(

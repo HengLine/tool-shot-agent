@@ -35,5 +35,20 @@
   "logging": {
     "level": "INFO",
     "format": "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+  },
+  "embedding": {
+    "provider": "openai",
+    "base_url": "https://api.openai.com/v1",
+    "api_key": "",
+    "model": "text-embedding-3-small",
+    "dimensions": 1536,
+    "timeout": 60,
+    "retry_count": 3
+  },
+  "paths": {
+    "data_input": "data/input",
+    "data_output": "data/output",
+    "model_cache": "data/models",
+    "embedding_cache": "data/embeddings"
   }
 }
