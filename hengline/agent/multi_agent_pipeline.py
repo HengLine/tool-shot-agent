@@ -136,6 +136,7 @@ class MultiAgentPipeline:
                      script_text: str,
                      style: str = "realistic",
                      duration_per_shot: int = 5,
+                     task_id: Optional[str] = None,
                      prev_continuity_state: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
         """
         运行完整的分镜生成流程
@@ -156,6 +157,7 @@ class MultiAgentPipeline:
             initial_state: StoryboardWorkflowState = {
                 "script_text": script_text,
                 "style": style,
+                "task_id": task_id,
                 "duration_per_shot": duration_per_shot,
                 "prev_continuity_state": prev_continuity_state,
                 "structured_script": None,

@@ -14,6 +14,7 @@ class InputState(TypedDict):
     style: str  # 视频风格
     duration_per_shot: int  # 每段时长
     prev_continuity_state: Optional[Dict[str, Any]]  # 上一段的连续性状态
+    task_id: str  #唯一标识符
 
 
 class ScriptParsingState(TypedDict):
