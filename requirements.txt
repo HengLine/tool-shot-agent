@@ -10,7 +10,10 @@ langgraph==0.6.11
 # langchain-wenxin
 langchain-deepseek
 # langchain-ollama
-llama-index==0.13.6
+llama-index-core==0.13.6
+llama-index-embeddings-openai
+llama-index-embeddings-huggingface
+llama-index-embeddings-ollama
 python-dotenv
 pydantic==2.11.10
 pydantic-settings==2.10.1
@@ -19,3 +22,4 @@ requests
 tiktoken
 # python-multipart  # 用于FastAPI文件上传支持
 httpx             # 用于异步HTTP请求
+jieba
