@@ -4,7 +4,7 @@
 @Author: HiPeng
 @Time: 2026/2/12 15:19
 """
-__version__ = "0.1.0"
+__version__ = "0.3.6"
 __author__ = "HiPeng"
 
 __all__ = [

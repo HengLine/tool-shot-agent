@@ -1,12 +1,12 @@
 """
-@FileName: start_flask.py
-@Description: Flask服务器启动脚本，负责提供API接口
+@FileName: main.py
+@Description: FastAPI 服务器启动脚本，负责提供 REST API 接口
     功能：
         1. 检查Python环境是否安装
         2. 检查虚拟环境是否存在，不存在则创建
         3. 根据不同系统激活虚拟环境
         4. 安装项目依赖
-        5. 启动Flask应用
+        5. 通过 uvicorn 启动 FastAPI 应用
 
     步骤严格按顺序执行，只有上一步成功才执行下一步
 @Author: HiPeng
@@ -71,32 +71,40 @@ class NeopenApp(AppBaseEnv):
             workers = api_config.workers  # 默认1个工作进程
             log_level = get_logging_manager().get_level("uvicorn").lower()
 
-            # 当启用reload时，uvicorn不支持多进程模式，自动禁用workers参数
-            # if reload and workers > 1:
-            #     info("警告: 热重载模式(reload=True)不支持多进程，自动将workers设置为1")
-            #     workers = 1
+            # 热重载与多进程互斥：启用 reload 时强制 workers=1
+            if reload and workers > 1:
+                info("警告: 热重载模式(reload=True)不支持多进程，自动将workers设置为1")
+                workers = 1
 
             # 输出启动信息
             debug(f"服务器配置: host={host}, port={port}, reload={reload}, workers={workers}")
             info(f"服务启动成功: 可以按 Ctrl+C 停止服务器")
 
-            # 检查应用文件路径是否正确
-            # 注意：这里使用字符串路径而不是检查文件存在，因为uvicorn会解析模块路径
-
             # 当workers=1时，使用更直接的方式以支持信号处理
             if workers == 1:
-                # 使用uvicorn的Config和Server类以获得更好的控制
-                config = uvicorn.Config(
-                    # APP_FILE,
-                    app,
-                    host=host,
-                    port=port,
-                    reload=False,
-                    log_level=log_level,
-                    access_log=True
-                )
-                server = uvicorn.Server(config)
-                server.run()
+                if reload:
+                    # 热重载模式：uvicorn 需通过模块导入路径加载应用，以便子进程监视文件变化
+                    info("已启用热重载模式（reload=True），源码变更将自动重启服务")
+                    uvicorn.run(
+                        "penshot.app:app",
+                        host=host,
+                        port=port,
+                        reload=True,
+                        log_level=log_level,
+                        access_log=True
+                    )
+                else:
+                    # 使用uvicorn的Config和Server类以获得更好的控制
+                    config = uvicorn.Config(
+                        app,
+                        host=host,
+                        port=port,
+                        reload=False,
+                        log_level=log_level,
+                        access_log=True
+                    )
+                    server = uvicorn.Server(config)
+                    server.run()
             else:
                 # 多进程模式下使用传统方式（此时reload一定为False）
                 uvicorn.run(
