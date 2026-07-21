@@ -18,6 +18,9 @@ import signal
 import sys
 from pathlib import Path
 
+# 添加src目录到Python路径（必须在导入 penshot 之前执行，否则未安装包时无法独立运行）
+sys.path.insert(0, str(Path(__file__).parent / "src"))
+
 from penshot.app.setup_env import AppBaseEnv
 from penshot.app import app
 from penshot.config.config import settings
@@ -28,12 +31,6 @@ from penshot.utils.log_utils import print_log_exception
 sys.stdout.reconfigure(encoding='utf-8')
 sys.stderr.reconfigure(encoding='utf-8')
 
-# 添加src目录到Python路径
-sys.path.insert(0, str(Path(__file__).parent / "src"))
-
-
-# 全局变量 - uvicorn期望的格式为"模块名:应用实例名"，不需要路径分隔符
-# APP_FILE = "./app:app"  # 应用入口路径
 
 class NeopenApp(AppBaseEnv):
     """Neopen应用启动类"""
