@@ -1,12 +1,12 @@
 """
-@FileName: start_flask.py
-@Description: Flask服务器启动脚本，负责提供API接口
+@FileName: main.py
+@Description: FastAPI 服务器启动脚本，负责提供 REST API 接口
     功能：
         1. 检查Python环境是否安装
         2. 检查虚拟环境是否存在，不存在则创建
         3. 根据不同系统激活虚拟环境
         4. 安装项目依赖
-        5. 启动Flask应用
+        5. 通过 uvicorn 启动 FastAPI 应用
 
     步骤严格按顺序执行，只有上一步成功才执行下一步
 @Author: HiPeng
@@ -18,22 +18,19 @@ import signal
 import sys
 from pathlib import Path
 
+# 添加src目录到Python路径（必须在导入 penshot 之前执行，否则未安装包时无法独立运行）
+sys.path.insert(0, str(Path(__file__).parent / "src"))
+
 from penshot.app.setup_env import AppBaseEnv
 from penshot.app import app
 from penshot.config.config import settings
-from penshot.logger import debug, info, error, get_logging_manager
+from penshot.logger import debug, info, warning, error, get_logging_manager
 from penshot.utils.log_utils import print_log_exception
 
 # 设置编码为UTF-8以确保中文显示正常
 sys.stdout.reconfigure(encoding='utf-8')
 sys.stderr.reconfigure(encoding='utf-8')
 
-# 添加src目录到Python路径
-sys.path.insert(0, str(Path(__file__).parent / "src"))
-
-
-# 全局变量 - uvicorn期望的格式为"模块名:应用实例名"，不需要路径分隔符
-# APP_FILE = "./app:app"  # 应用入口路径
 
 class NeopenApp(AppBaseEnv):
     """Neopen应用启动类"""
@@ -71,33 +68,50 @@ class NeopenApp(AppBaseEnv):
             workers = api_config.workers  # 默认1个工作进程
             log_level = get_logging_manager().get_level("uvicorn").lower()
 
-            # 当启用reload时，uvicorn不支持多进程模式，自动禁用workers参数
-            # if reload and workers > 1:
-            #     info("警告: 热重载模式(reload=True)不支持多进程，自动将workers设置为1")
-            #     workers = 1
+            # 热重载与多进程互斥：启用 reload 时强制 workers=1
+            if reload and workers > 1:
+                info("警告: 热重载模式(reload=True)不支持多进程，自动将workers设置为1")
+                workers = 1
 
             # 输出启动信息
             debug(f"服务器配置: host={host}, port={port}, reload={reload}, workers={workers}")
             info(f"服务启动成功: 可以按 Ctrl+C 停止服务器")
 
-            # 检查应用文件路径是否正确
-            # 注意：这里使用字符串路径而不是检查文件存在，因为uvicorn会解析模块路径
-
             # 当workers=1时，使用更直接的方式以支持信号处理
             if workers == 1:
-                # 使用uvicorn的Config和Server类以获得更好的控制
-                config = uvicorn.Config(
-                    # APP_FILE,
-                    app,
-                    host=host,
-                    port=port,
-                    reload=False,
-                    log_level=log_level,
-                    access_log=True
-                )
-                server = uvicorn.Server(config)
-                server.run()
+                if reload:
+                    # 热重载模式：uvicorn 需通过模块导入路径加载应用，以便子进程监视文件变化
+                    info("已启用热重载模式（reload=True），源码变更将自动重启服务")
+                    uvicorn.run(
+                        "penshot.app:app",
+                        host=host,
+                        port=port,
+                        reload=True,
+                        log_level=log_level,
+                        access_log=True
+                    )
+                else:
+                    # 使用uvicorn的Config和Server类以获得更好的控制
+                    config = uvicorn.Config(
+                        app,
+                        host=host,
+                        port=port,
+                        reload=False,
+                        log_level=log_level,
+                        access_log=True
+                    )
+                    server = uvicorn.Server(config)
+                    server.run()
             else:
+                # 多进程模式（workers>1）：任务队列/回调为进程内状态，任务记录需经 Redis 跨进程共享。
+                # 若 Redis 不可用，任务将在进程间分裂（提交到进程A的任务在进程B查询为 not_found）
+                try:
+                    from penshot.utils.redis_utils import RedisClient
+                    if RedisClient().get_client() is None:
+                        warning(f"多进程模式(workers={workers})下 Redis 不可用，任务状态将在进程间分裂，强烈建议配置 PENSHOT_REDIS_URL")
+                except Exception:
+                    warning(f"多进程模式(workers={workers})下 Redis 连接失败，任务状态将在进程间分裂，强烈建议配置 PENSHOT_REDIS_URL")
+
                 # 多进程模式下使用传统方式（此时reload一定为False）
                 uvicorn.run(
                     app,

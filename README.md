@@ -116,7 +116,7 @@ status = agent.get_task_status(task_id)
 result = await agent.wait_for_result_async(task_id)
 ```
 
-Full example: [direct_usage.py](https://github.com/neopen/story-shot-agent/blob/main/example/direct_usage.py)
+Full example: [direct_usage.py](https://github.com/neopen/story-shot-agent/blob/main/examples/direct_usage.py)
 
 #### 2. FastAPI Web Application Integration
 
@@ -135,15 +135,15 @@ async def generate(script_text: str):
     return {"task_id": task_id, "status": "PENDING"}
 ```
 
-Full example: [web_app.py](https://github.com/neopen/story-shot-agent/blob/main/example/web_app.py)
+Full example: [web_app.py](https://github.com/neopen/story-shot-agent/blob/main/examples/web_app.py)
 
 #### 3. LangGraph Node Integration
 
-Can be embedded as an independent node in LangChain/LangGraph workflows for end-to-end automation. Full example: [langgraph_integration.py](https://github.com/neopen/story-shot-agent/blob/main/example/langgraph_integration.py)
+Can be embedded as an independent node in LangChain/LangGraph workflows for end-to-end automation. Full example: [langgraph_integration.py](https://github.com/neopen/story-shot-agent/blob/main/examples/langgraph_integration.py)
 
 #### 4. A2A Protocol Collaboration
 
-Supports context passing and task orchestration with upstream scriptwriting agents and downstream text-to-video/editing agents. Full example: [a2a_integration.py](https://github.com/neopen/story-shot-agent/blob/main/example/a2a_integration.py)
+Supports context passing and task orchestration with upstream scriptwriting agents and downstream text-to-video/editing agents. Full example: [a2a_integration.py](https://github.com/neopen/story-shot-agent/blob/main/examples/a2a_integration.py)
 
 #### 5. MCP (Model Context Protocol) Support
 
@@ -153,7 +153,7 @@ Start the MCP Server:
 python -m penshot.mcp_server --max-concurrent 5 --queue-size 500
 ```
 
-Clients can call the `breakdown_script` and `get_task_result` tools to seamlessly integrate with MCP-compatible IDEs or agent frameworks. Full example: [mcp_client.py](https://github.com/neopen/story-shot-agent/blob/main/example/mcp_client.py)
+Clients can call the `breakdown_script` and `get_task_result` tools to seamlessly integrate with MCP-compatible IDEs or agent frameworks. Full example: [mcp_client.py](https://github.com/neopen/story-shot-agent/blob/main/examples/mcp_client.py)
 
 
 

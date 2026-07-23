@@ -2,18 +2,21 @@
 @FileName: cli.py
 @Description: 命令行工具 - Penshot 智能分镜生成
 使用方式:
-    penshot --help
-    penshot breakdown "剧本内容" -o output.json
-    penshot breakdown -f script.txt -o result.json
-    penshot serve          # 启动 MCP 服务器
-    penshot serve-rest     # 启动 REST API 服务器
-    penshot status <task_id>      # 查询任务状态
-    penshot result <task_id>      # 获取任务结果
-    penshot cancel <task_id>      # 取消任务
-    penshot batch -f scripts.txt  # 批量处理
+    story-shot-agent --help
+    story-shot-agent breakdown "剧本内容" -o output.json
+    story-shot-agent breakdown -f script.txt -o result.json
+    story-shot-agent serve          # 启动 MCP 服务器
+    story-shot-agent serve-rest     # 启动 REST API 服务器
+    story-shot-agent status <task_id>      # 查询任务状态
+    story-shot-agent result <task_id>      # 获取任务结果
+    story-shot-agent cancel <task_id>      # 取消任务
+    story-shot-agent batch -f scripts.txt  # 批量处理
+    story-shot-agent-serve                 # 直接启动 REST API 服务器
 @Author: HiPeng
 @Time: 2026/3/23 18:56
 """
+
+from __future__ import annotations
 
 import argparse
 import json
@@ -21,8 +24,16 @@ import sys
 import time
 from typing import Dict
 
-from penshot.api import PenshotFunction, ShotLanguage, __version__
-from penshot.neopen.task.task_models import TaskStatus
+from penshot import __version__
+from penshot.api import PenshotFunction
+from penshot.neopen.shot_language import ShotLanguage
+from penshot.neopen.task import TaskStatus
+
+
+def _create_agent(**kwargs):
+    """惰性创建 PenshotFunction 实例（避免 --version/--help 等轻量命令触发全量重依赖初始化）"""
+    from penshot.api import PenshotFunction
+    return PenshotFunction(**kwargs)
 
 
 class Colors:
@@ -177,7 +188,7 @@ def cmd_breakdown(args):
 
     # 创建智能体
     language = ShotLanguage.ZH if args.language == "zh" else ShotLanguage.EN
-    agent = PenshotFunction(language=language, max_concurrent=5)
+    agent = _create_agent(language=language, max_concurrent=5)
 
     # 执行分镜
     print_info("正在处理...")
@@ -226,8 +237,8 @@ def cmd_breakdown(args):
         # 异步模式
         task_id = agent.breakdown_script_async(script)
         print_info(f"任务已提交: {task_id}")
-        print_info(f"查询状态: penshot status {task_id}")
-        print_info(f"获取结果: penshot result {task_id}")
+        print_info(f"查询状态: story-shot-agent status {task_id}")
+        print_info(f"获取结果: story-shot-agent result {task_id}")
 
         if args.wait:
             # 等待完成
@@ -241,7 +252,7 @@ def cmd_breakdown(args):
 
 def cmd_status(args):
     """查询任务状态"""
-    agent = PenshotFunction(max_concurrent=5)
+    agent = _create_agent(max_concurrent=5)
     task = agent.get_task_status(args.task_id)
 
     if not task:
@@ -282,7 +293,7 @@ def cmd_status(args):
 
 def cmd_result(args):
     """获取任务结果"""
-    agent = PenshotFunction(max_concurrent=5)
+    agent = _create_agent(max_concurrent=5)
     result = agent.get_task_result(args.task_id)
 
     if not result:
@@ -322,7 +333,7 @@ def cmd_result(args):
 
 def cmd_cancel(args):
     """取消任务"""
-    agent = PenshotFunction(max_concurrent=5)
+    agent = _create_agent(max_concurrent=5)
     success = agent.cancel_task(args.task_id)
 
     if success:
@@ -334,6 +345,14 @@ def cmd_cancel(args):
 def cmd_batch(args):
     """批量处理"""
     print_header("Penshot - 批量分镜生成")
+
+    # -f 与位置参数 scripts 互斥校验（argparse 互斥组不支持位置参数，故手动校验）
+    if args.file and args.scripts:
+        print_error("-f/--file 与直接提供的剧本列表不能同时使用，请二选一")
+        sys.exit(1)
+    if not args.file and not args.scripts:
+        print_error("请提供剧本列表（--file 或直接提供）")
+        sys.exit(1)
 
     # 读取剧本列表
     scripts = []
@@ -359,7 +378,7 @@ def cmd_batch(args):
     print_info(f"批量处理 {len(scripts)} 个剧本")
 
     language = ShotLanguage.ZH if args.language == "zh" else ShotLanguage.EN
-    agent = PenshotFunction(language=language, max_concurrent=5)
+    agent = _create_agent(language=language, max_concurrent=5)
 
     # 执行批量处理
     if args.sync:
@@ -467,7 +486,7 @@ def cmd_serve_rest(args):
 
 def cmd_queue_status(args):
     """查看队列状态"""
-    agent = PenshotFunction(max_concurrent=5)
+    agent = _create_agent(max_concurrent=5)
     queue_status = agent.get_queue_status()
     stats = agent.get_stats()
 
@@ -501,14 +520,14 @@ def create_parser() -> argparse.ArgumentParser:
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 示例:
-  penshot breakdown "深夜，客厅里，张三紧张地环顾四周..." -o result.json
-  penshot breakdown -f script.txt --sync -o result.json
-  penshot status <task_id>
-  penshot result <task_id> -o output.json
-  penshot cancel <task_id>
-  penshot batch -f scripts.txt --sync
-  penshot serve-rest --port 8080
-  penshot queue-status
+  story-shot-agent breakdown "深夜，客厅里，张三紧张地环顾四周..." -o result.json
+  story-shot-agent breakdown -f script.txt --sync -o result.json
+  story-shot-agent status <task_id>
+  story-shot-agent result <task_id> -o output.json
+  story-shot-agent cancel <task_id>
+  story-shot-agent batch -f scripts.txt --sync
+  story-shot-agent serve-rest --port 8080
+  story-shot-agent queue-status
         """
     )
 
@@ -547,10 +566,11 @@ def create_parser() -> argparse.ArgumentParser:
     cancel_parser.add_argument('task_id', help='任务ID')
 
     # batch 命令
+    # 注意：argparse 互斥组只允许 optional 参数，位置参数 scripts 不能放入互斥组，
+    # 因此 -f 与 scripts 的二选一在 cmd_batch 中手动校验
     batch_parser = subparsers.add_parser('batch', help='批量处理')
-    input_group = batch_parser.add_mutually_exclusive_group(required=True)
-    input_group.add_argument('-f', '--file', help='剧本列表文件（每行一个剧本）')
-    input_group.add_argument('scripts', nargs='*', help='多个剧本文本')
+    batch_parser.add_argument('-f', '--file', help='剧本列表文件（每行一个剧本）')
+    batch_parser.add_argument('scripts', nargs='*', help='多个剧本文本（与 -f 二选一）')
     batch_parser.add_argument('-o', '--output', help='输出文件路径')
     batch_parser.add_argument('--language', default='zh', choices=['zh', 'en'], help='输出语言')
     batch_parser.add_argument('--sync', action='store_true', help='同步模式')
@@ -602,6 +622,21 @@ def main():
         command_map[args.command](args)
     else:
         parser.print_help()
+
+
+def serve():
+    """console_scripts 入口：直接启动 REST API 服务器
+
+    对应 pyproject 中的 `story-shot-agent-serve = "penshot.cli:serve"`。
+    用法: story-shot-agent-serve [--host HOST] [--port PORT]
+    """
+    parser = argparse.ArgumentParser(
+        prog="story-shot-agent-serve",
+        description="启动 Penshot REST API 服务器"
+    )
+    parser.add_argument('--host', default='0.0.0.0', help='监听地址')
+    parser.add_argument('--port', type=int, default=8000, help='监听端口')
+    cmd_serve_rest(parser.parse_args())
 
 
 if __name__ == '__main__':

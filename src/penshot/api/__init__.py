@@ -19,10 +19,11 @@
 3. REST API 调用：
     POST /api/storyboard
 """
+# 版本号以顶层包 penshot.__version__ 为单一事实源（pyproject 动态版本也取自该属性）
+from penshot import __version__
 from penshot.api.function_calls import PenshotFunction, PenshotResult
 from penshot.api.function_calls import create_penshot_agent
 
-__version__ = "0.1.0"
 __author__ = "HiPeng"
 
 __all__ = [

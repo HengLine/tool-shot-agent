@@ -21,6 +21,9 @@ from penshot.neopen.task.task_models import ProcessingStatus, TaskStatus, TaskRe
 from penshot.neopen.task.task_processor import AsyncTaskProcessor, TaskPriority
 from penshot.utils.log_utils import print_log_exception
 
+# 任务记录默认 TTL：30 天。各入口（SDK/REST）统一引用该常量，避免多处硬编码漂移
+DEFAULT_TASK_TTL_SECONDS = 30 * 86400
+
 
 class TaskFactory:
     """任务工厂 - 封装任务提交和执行"""
@@ -684,7 +687,7 @@ def create_task_factory(
         queue_size: int = 1000,
         default_config: Optional[ShotConfig] = None,
         default_language: ShotLanguage = ShotLanguage.ZH,
-        task_ttl_seconds: int = 7 * 86400
+        task_ttl_seconds: int = DEFAULT_TASK_TTL_SECONDS
 ) -> TaskFactory:
     """创建任务工厂实例"""
     return TaskFactory(
