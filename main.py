@@ -24,7 +24,7 @@ sys.path.insert(0, str(Path(__file__).parent / "src"))
 from penshot.app.setup_env import AppBaseEnv
 from penshot.app import app
 from penshot.config.config import settings
-from penshot.logger import debug, info, error, get_logging_manager
+from penshot.logger import debug, info, warning, error, get_logging_manager
 from penshot.utils.log_utils import print_log_exception
 
 # 设置编码为UTF-8以确保中文显示正常
@@ -103,6 +103,15 @@ class NeopenApp(AppBaseEnv):
                     server = uvicorn.Server(config)
                     server.run()
             else:
+                # 多进程模式（workers>1）：任务队列/回调为进程内状态，任务记录需经 Redis 跨进程共享。
+                # 若 Redis 不可用，任务将在进程间分裂（提交到进程A的任务在进程B查询为 not_found）
+                try:
+                    from penshot.utils.redis_utils import RedisClient
+                    if RedisClient().get_client() is None:
+                        warning(f"多进程模式(workers={workers})下 Redis 不可用，任务状态将在进程间分裂，强烈建议配置 PENSHOT_REDIS_URL")
+                except Exception:
+                    warning(f"多进程模式(workers={workers})下 Redis 连接失败，任务状态将在进程间分裂，强烈建议配置 PENSHOT_REDIS_URL")
+
                 # 多进程模式下使用传统方式（此时reload一定为False）
                 uvicorn.run(
                     app,

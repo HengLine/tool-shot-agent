@@ -15,7 +15,9 @@ from penshot.logger import info, error
 from penshot.neopen.agent.base_models import VideoStyle
 from penshot.neopen.shot_config import ShotConfig
 from penshot.neopen.shot_language import ShotLanguage, set_language
-from penshot.neopen.task.task_factory import create_task_factory, TaskFactory, TaskResponse, TaskPriority
+from penshot.neopen.task.task_factory import (
+    create_task_factory, TaskFactory, TaskResponse, TaskPriority, DEFAULT_TASK_TTL_SECONDS,
+)
 from penshot.neopen.task.task_models import TaskStatus
 from penshot.utils.log_utils import print_log_exception
 
@@ -74,7 +76,7 @@ class PenshotFunction:
             queue_size=queue_size,
             default_config=config,
             default_language=language,
-            task_ttl_seconds=30 * 86400
+            task_ttl_seconds=DEFAULT_TASK_TTL_SECONDS
         )
 
         # 保持兼容性

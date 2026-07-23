@@ -16,15 +16,24 @@
 @Time: 2026/3/23 18:56
 """
 
+from __future__ import annotations
+
 import argparse
 import json
 import sys
 import time
 from typing import Dict
 
-from penshot.api import PenshotFunction, __version__
+from penshot import __version__
+from penshot.api import PenshotFunction
 from penshot.neopen.shot_language import ShotLanguage
-from penshot.neopen.task.task_models import TaskStatus
+from penshot.neopen.task import TaskStatus
+
+
+def _create_agent(**kwargs):
+    """惰性创建 PenshotFunction 实例（避免 --version/--help 等轻量命令触发全量重依赖初始化）"""
+    from penshot.api import PenshotFunction
+    return PenshotFunction(**kwargs)
 
 
 class Colors:
@@ -179,7 +188,7 @@ def cmd_breakdown(args):
 
     # 创建智能体
     language = ShotLanguage.ZH if args.language == "zh" else ShotLanguage.EN
-    agent = PenshotFunction(language=language, max_concurrent=5)
+    agent = _create_agent(language=language, max_concurrent=5)
 
     # 执行分镜
     print_info("正在处理...")
@@ -243,7 +252,7 @@ def cmd_breakdown(args):
 
 def cmd_status(args):
     """查询任务状态"""
-    agent = PenshotFunction(max_concurrent=5)
+    agent = _create_agent(max_concurrent=5)
     task = agent.get_task_status(args.task_id)
 
     if not task:
@@ -284,7 +293,7 @@ def cmd_status(args):
 
 def cmd_result(args):
     """获取任务结果"""
-    agent = PenshotFunction(max_concurrent=5)
+    agent = _create_agent(max_concurrent=5)
     result = agent.get_task_result(args.task_id)
 
     if not result:
@@ -324,7 +333,7 @@ def cmd_result(args):
 
 def cmd_cancel(args):
     """取消任务"""
-    agent = PenshotFunction(max_concurrent=5)
+    agent = _create_agent(max_concurrent=5)
     success = agent.cancel_task(args.task_id)
 
     if success:
@@ -369,7 +378,7 @@ def cmd_batch(args):
     print_info(f"批量处理 {len(scripts)} 个剧本")
 
     language = ShotLanguage.ZH if args.language == "zh" else ShotLanguage.EN
-    agent = PenshotFunction(language=language, max_concurrent=5)
+    agent = _create_agent(language=language, max_concurrent=5)
 
     # 执行批量处理
     if args.sync:
@@ -477,7 +486,7 @@ def cmd_serve_rest(args):
 
 def cmd_queue_status(args):
     """查看队列状态"""
-    agent = PenshotFunction(max_concurrent=5)
+    agent = _create_agent(max_concurrent=5)
     queue_status = agent.get_queue_status()
     stats = agent.get_stats()
 

@@ -14,7 +14,11 @@ from datetime import datetime
 from enum import Enum
 from typing import Any, Dict, Optional
 
-from langgraph.checkpoint.sqlite import SqliteSaver
+try:
+    from langgraph.checkpoint.sqlite import SqliteSaver
+except ImportError:
+    # langgraph-checkpoint-sqlite 未安装时优雅降级：SQLite 模式自动回退为内存模式
+    SqliteSaver = None
 
 from penshot.logger import debug, info, warning
 from penshot.neopen.shot_config import ShotConfig
@@ -148,13 +152,19 @@ class WorkflowCheckpointer:
             info("使用 MemorySaver（内存模式）")
 
         elif self.mode == CheckpointMode.SQLITE:
-            # 创建数据库连接
-            self._conn = sqlite3.connect(self.db_path, check_same_thread=False)
-            self._conn.execute("PRAGMA journal_mode=WAL")
-            self._conn.execute("PRAGMA synchronous=NORMAL")
+            if SqliteSaver is None:
+                # langgraph-checkpoint-sqlite 未安装：回退为内存模式
+                warning("langgraph-checkpoint-sqlite 未安装，SQLite 检查点不可用，回退为内存模式（服务重启后状态丢失）")
+                from langgraph.checkpoint.memory import MemorySaver
+                self._saver = MemorySaver()
+            else:
+                # 创建数据库连接
+                self._conn = sqlite3.connect(self.db_path, check_same_thread=False)
+                self._conn.execute("PRAGMA journal_mode=WAL")
+                self._conn.execute("PRAGMA synchronous=NORMAL")
 
-            self._saver = SqliteSaver(self._conn)
-            info(f"使用 SqliteSaver: {self.db_path}")
+                self._saver = SqliteSaver(self._conn)
+                info(f"使用 SqliteSaver: {self.db_path}")
 
         return self._saver
 

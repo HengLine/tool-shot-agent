@@ -5,7 +5,7 @@
 @Time: 2026/3/24 21:48
 """
 from penshot.logger import info
-from penshot.neopen.task.task_factory import TaskFactory, create_task_factory
+from penshot.neopen.task.task_factory import TaskFactory, create_task_factory, DEFAULT_TASK_TTL_SECONDS
 
 # 使用 TaskFactory 替代原始的 TaskManager + TaskProcessor
 task_factory: TaskFactory = None
@@ -17,7 +17,7 @@ def init_task_factory(max_concurrent: int = 10, queue_size: int = 1000):
     task_factory = create_task_factory(
         max_concurrent=max_concurrent,
         queue_size=queue_size,
-        task_ttl_seconds=20 * 86400
+        task_ttl_seconds=DEFAULT_TASK_TTL_SECONDS
     )
 
 
