@@ -1,0 +1,60 @@
+name: CI Checks
+
+# 触发条件：推送到 main 分支，或者针对 main 分支提交 Pull Request 时触发
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+# 设置任务权限（仅读取权限）
+permissions:
+  contents: read
+
+jobs:
+  test-and-lint:
+    runs-on: ubuntu-latest
+
+    steps:
+    # 1. 拉取仓库代码
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    # 2. 设置 Python 环境（使用 3.10 版本）
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: "3.10"
+        # 开启 pip 依赖缓存，加快后续 CI 执行速度
+        cache: 'pip'
+
+    # 3. 安装项目依赖与测试工具
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        # 安装测试工具和必要的依赖包
+        pip install flake8 pytest pyyaml
+        
+        # 优先通过 pyproject.toml / setup.py 安装项目本身及所有依赖（包含开发依赖）
+        if [ -f pyproject.toml ] || [ -f setup.py ]; then
+          pip install -e ".[full,dev]" || pip install -e .
+        elif [ -f requirements.txt ]; then
+          pip install -r requirements.txt
+        fi
+
+    # 4. 代码规范与语法检查 (Lint)
+    - name: Lint with flake8
+      run: |
+        # 检查逻辑错误和未定义变量（包含 --exclude 自动跳过 .claude 等无关目录）
+        flake8 . \
+          --count \
+          --exclude=.claude,docs,build,dist,.git,__pycache__ \
+          --select=E9,F63,F7,F82 \
+          --show-source \
+          --statistics
+
+    # 5. 执行单元测试 (Test)
+    - name: Run tests with pytest
+      run: |
+        # 自动运行 tests/ 目录下的所有单元测试
+        pytest
