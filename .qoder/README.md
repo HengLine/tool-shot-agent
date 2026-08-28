@@ -1,6 +1,6 @@
 # .qoder/ 目录说明
 
-> `.qoder/` 是 Qoder Agent 的上下文知识库，集中存放项目理解、行为规则、Agent Skill 与模块级知识卡。
+> `.qoder/` 是 Qoder Agent 的上下文知识库，集中存放项目理解、行为规则、Agent Skill 与模块级的知识卡。
 > 本目录内的文档仅服务于 Agent 与开发者参考，不替代 `docs/` 下的人类架构文档。
 
 ---
