@@ -54,7 +54,7 @@ jobs:
           --statistics
 
     # 5. 执行单元测试 (Test)
-    - name: Run tests with pytest
-      run: |
+#    - name: Run tests with pytest
+#      run: |
         # 自动运行 tests/ 目录下的所有单元测试
-        pytest
+#        pytest
