@@ -1,0 +1,18 @@
+[flake8]
+# 指定不需要检查的目录（多个目录用逗号隔开）
+exclude = 
+    .claude,
+    .git,
+    .qoder,
+    __pycache__,
+    build,
+    tests,
+    dist,
+    *.egg-info
+
+# 单独忽略特定文件的检查（可选）
+# per-file-ignores = 
+#     scripts/*: F821
+
+# 设置单行最大允许长度
+max-line-length = 100
