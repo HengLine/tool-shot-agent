@@ -17,10 +17,10 @@ RUN apt-get update \
 COPY pyproject.toml README.md ./
 COPY src/ ./src/
 
-# 从 pyproject.toml 构建项目的 Wheel 依赖包以及项目自身
-RUN python -m pip install --upgrade pip \
-    && pip wheel --no-cache-dir --no-deps --wheel-dir /app/wheels . \
-    && pip wheel --no-cache-dir --wheel-dir /app/wheels -r <(python -c "import tomli; print('\n'.join(tomli.load(open('pyproject.toml', 'rb'))['project']['dependencies']))" 2>/dev/null || pip install build && python -m build -w -o /app/wheels)
+
+# 标准打包：从 pyproject.toml 构建项目与其依赖的 wheel 包（兼容默认 /bin/sh 环境）
+RUN python -m pip install --upgrade pip setuptools build \
+    && pip wheel --no-cache-dir --wheel-dir /app/wheels .
 
 
 # ==========================================
