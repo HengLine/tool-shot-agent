@@ -1,18 +1,31 @@
 [flake8]
-# 指定不需要检查的目录（多个目录用逗号隔开）
-exclude = 
+# 最大允许的单行长度（匹配 Black 等常见格式化工具的标准）
+max-line-length = 120
+
+# 忽略/排除检查的文件和文件夹
+exclude =
     .claude,
-    .git,
+    .github,
     .qoder,
-    __pycache__,
+    assets,
+    docs,
+    examples,
     build,
-    tests,
     dist,
+    .git,
+    __pycache__,
+    .venv,
+    venv,
     *.egg-info
 
-# 单独忽略特定文件的检查（可选）
-# per-file-ignores = 
-#     scripts/*: F821
+# 全局忽略的次要告警代码（避免与格式化工具冲突）
+# E203: `:` 前的空格
+# W503: 换行符在二元运算符之前
+ignore = E203, W503
 
-# 设置单行最大允许长度
-max-line-length = 100
+# 针对特定路径自定义忽略规则（可选）
+per-file-ignores =
+    # 允许 __init__.py 中导出未使用的包，不报 F401 错误
+    __init__.py: F401
+    # 允许测试文件中使用断言和局部未定义调整
+    tests/*: F811
