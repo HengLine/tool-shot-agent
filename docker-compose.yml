@@ -9,14 +9,14 @@ services:
     ports:
       - "8000:8000"
     
-    # 优先加载外部 .env 文件，同时设定默认环境变量
+    # 自动加载 penshot 所需的 LLM / Embedding 环境变量
     env_file:
       - .env
     environment:
       API__HOST: "0.0.0.0"
       API__PORT: "8000"
 
-    # 配合 Dockerfile 的健康检查（自动判定容器状态）
+    # 健康检查联动
     healthcheck:
       test: ["CMD-SHELL", "curl -f http://localhost:8000/health || exit 1"]
       interval: 30s
@@ -24,7 +24,7 @@ services:
       retries: 3
       start_period: 10s
 
-    # 资源限制（防止内存泄漏崩溃宿主机）
+    # 容器资源上限控制
     deploy:
       resources:
         limits:
@@ -33,13 +33,9 @@ services:
         reservations:
           memory: 512M
 
-    # 日志切割设置（防止日志塞爆磁盘）
+    # 日志防暴增配置
     logging:
       driver: "json-file"
       options:
         max-size: "10m"
         max-file: "3"
-
-    # 数据持久化挂载（根据需要取消注释）
-    volumes:
-      - ./logs: /data/app/logs
