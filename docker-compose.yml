@@ -1,5 +1,5 @@
 services:
-  story-shot-agent:
+  penshot:
     build:
       context: .
       dockerfile: Dockerfile
@@ -13,8 +13,8 @@ services:
     env_file:
       - .env
     environment:
-      API__HOST: "0.0.0.0"
-      API__PORT: "8000"
+      PENSHOT_API__HOST: "0.0.0.0"
+      PENSHOT_API__PORT: "8000"
 
     # 健康检查联动
     healthcheck:
