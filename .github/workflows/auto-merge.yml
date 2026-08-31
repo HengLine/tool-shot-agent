@@ -1,0 +1,23 @@
+name: Auto Merge PR
+
+on:
+  pull_request_target:
+    types: [labeled, unlabeled, synchronize, opened, edited, ready_for_review]
+  workflow_run:
+    workflows: ["CI Checks"]  # 你的 CI workflow 名称
+    types: [completed]
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  automerge:
+    runs-on: ubuntu-latest
+    if: github.event.workflow_run.conclusion == 'success' || github.event_name == 'pull_request_target'
+    steps:
+      - name: Auto-merge PR
+        uses: peter-evans/enable-pull-request-automerge@v3
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          merge-method: squash  # 可选: merge, squash, rebase
