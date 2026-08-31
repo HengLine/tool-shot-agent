@@ -1,0 +1,34 @@
+# 修改了测试文件
+testing:
+  - changed-files:
+      - any-glob-to-any-file: 'tests/**/*'
+
+# 修改了核心业务逻辑
+core-code:
+  - changed-files:
+      - any-glob-to-any-file: 'src/**/*'
+
+# 修改了文档或说明
+documentation:
+  - changed-files:
+      - any-glob-to-any-file:
+          - 'docs/**/*'
+          - 'assets/**/*'
+          - '*.md'
+
+# 修改了 CI 或配置文件
+ci/cd:
+  - changed-files:
+      - any-glob-to-any-file:
+          - '.github/**/*'
+          - '.claude/**/*'
+          - '.qoder/**/*'
+          - '.flake8'
+          - 'pytest.ini'
+          - '.dockerignore'
+          - '.gitignore'
+          - 'docker-compose.yml'
+          - 'Dockerfile'
+          - '.env.example'
+          - '.dockerignore'
+          - 'pyproject.toml'
