@@ -2,19 +2,28 @@
 __pycache__/
 *.py[cod]
 *$py.class
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache
+.coverage
 
 # Virtual environment
 .venv/
 venv/
+ENV/
 
 # Distribution / packaging
 build/
+htmlcov/
 dist/
 *.egg-info/
 
 # Logs and runtime data
 logs/
 data/
+docs/
+tests/
 *.log
 
 # Editor and OS files
@@ -26,4 +35,8 @@ Thumbs.db
 
 # Git
 .git
+.github
 
+# AI
+.claude
+.qoder
