@@ -3,10 +3,13 @@
 exclude = 
     .claude,
     .git,
+    .github,
     .qoder,
     __pycache__,
     build,
-    tests,
+    assets,
+    docs,
+    examples,
     dist,
     *.egg-info
 
@@ -15,4 +18,4 @@ exclude =
 #     scripts/*: F821
 
 # 设置单行最大允许长度
-max-line-length = 100
+max-line-length = 200
