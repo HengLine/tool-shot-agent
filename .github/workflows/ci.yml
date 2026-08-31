@@ -48,7 +48,7 @@ jobs:
         # 检查逻辑错误和未定义变量（包含 --exclude 自动跳过 .claude 等无关目录）
         flake8 . \
           --count \
-          --exclude=.claude,docs,build,dist,.git,__pycache__ \
+          --exclude=.claude,.qoder,assets,docs,build,examples,dist,.git,.github,.gitignore,,__pycache__ \
           --select=E9,F63,F7,F82 \
           --show-source \
           --statistics
