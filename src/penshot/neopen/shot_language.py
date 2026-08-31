@@ -88,7 +88,6 @@ def get_language() -> ShotLanguage:
     获取当前语言枚举
     :return: 当前语言枚举对象
     """
-    global _current_language
     if _current_language is None:
         _init_language_from_env()
     return _current_language or ShotLanguage.ZH  # 默认返回中文
