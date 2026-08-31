@@ -235,6 +235,5 @@ def reload_keyword_configuration():
     """
     重新加载关键词配置文件
     """
-    global keyword_config
     keyword_config.load_configuration()
     debug("关键词配置已重新加载")

@@ -137,8 +137,6 @@ def get_planner_config(language: ShotLanguage = None) -> TemporalPlannerConfig:
     Returns:
         TemporalPlannerConfig: 配置实例
     """
-    global planner_config
-
     if language and language.value != planner_config._language:
         planner_config.set_language(language)
 
@@ -149,7 +147,6 @@ def reload_configuration() -> TemporalPlannerConfig:
     """
     重新加载配置文件
     """
-    global planner_config
     planner_config.load_configuration()
     debug("配置已重新加载")
     return planner_config
