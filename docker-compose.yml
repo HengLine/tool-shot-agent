@@ -1,16 +1,45 @@
-version: '3.8'
-
 services:
   story-shot-agent:
-    build: .
+    build:
+      context: .
+      dockerfile: Dockerfile
     image: story-shot-agent:latest
+    container_name: story-shot-agent
     restart: unless-stopped
     ports:
       - "8000:8000"
+    
+    # 优先加载外部 .env 文件，同时设定默认环境变量
+    env_file:
+      - .env
     environment:
       API__HOST: "0.0.0.0"
       API__PORT: "8000"
-    # If you want logs or persistent data, mount volumes below
-    # volumes:
-    #   - ./logs:/app/logs
 
+    # 配合 Dockerfile 的健康检查（自动判定容器状态）
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8000/health || exit 1"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+
+    # 资源限制（防止内存泄漏崩溃宿主机）
+    deploy:
+      resources:
+        limits:
+          cpus: '2.0'
+          memory: 2G
+        reservations:
+          memory: 512M
+
+    # 日志切割设置（防止日志塞爆磁盘）
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+    # 数据持久化挂载（根据需要取消注释）
+    volumes:
+      - ./logs: /data/app/logs
