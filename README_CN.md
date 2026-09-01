@@ -209,6 +209,49 @@ python -m penshot.mcp_server --max-concurrent 5 --queue-size 500
 
 ------
 
+## Docker 快速部署
+
+### 1. 下载配置文件
+```bash
+# Docker Compose 配置文件
+wget https://raw.githubusercontent.com/neopen/story-shot-agent/main/docker-compose.yml
+# penshot 配置文件
+wget https://raw.githubusercontent.com/neopen/story-shot-agent/main/.env.example -O .env
+```
+
+### 2. 配置环境变量
+
+修改 `.env` 文件，填入你的 OpenAI API Key 及相关模型配置：`vim .env`
+
+### 3. 启动服务
+
+`docker compose up -d`
+
+
+
+
+---
+
+### `docker run` 命令启动
+
+如果不想下载 Compose 文件，只希望直接执行 `docker run` 命令启动容器，可以通过 `-e` 参数直接将配置注入容器内部。
+
+```bash
+docker run -d \
+  --name penshot \
+  -p 8000:8000 \
+  -e PENSHOT_LLM__DEFAULT__BASE_URL="https://api.openai.com/v1" \
+  -e PENSHOT_LLM__DEFAULT__API_KEY="sk-xxxxxxxxxxxxxxxxxx" \
+  -e PENSHOT_LLM__DEFAULT__MODEL_NAME="gpt-4o" \
+  -e PENSHOT_EMBED__DEFAULT__API_KEY="sk-xxxxxxxxxxxxxxxxxx" \
+  -e PENSHOT_REDIS_URL="redis://:123456@127.0.0.1:6379/0" \
+  ghcr.io/neopen/penshot:latest
+```
+
+
+
+------
+
 ## 输出数据结构
 
 系统返回标准化的 JSON 格式，包含视频提示词、负面提示词、时长估算、风格参数及配套的音频提示词：

@@ -8,16 +8,16 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 
 WORKDIR /app
 
-# 安装底层 C/C++ 依赖（满足 Pillow, numpy, cffi 等包的编译依赖）
+# 安装底层 C/C++ 编译依赖（满足 Pillow, numpy, cffi 等包的编译依赖）
 RUN apt-get update \
     && apt-get install -y --no-install-recommends gcc build-essential libffi-dev libssl-dev git curl \
     && rm -rf /var/lib/apt/lists/*
 
-# 复制依赖配置文件与项目自述文件（setuptools 构建所需的元数据）
+# 复制依赖声明文件与项目源码
 COPY pyproject.toml README.md ./
 COPY src/ ./src/
 
-# 标准打包：从 pyproject.toml 构建项目与其依赖的 wheel 包（兼容默认 /bin/sh 环境）
+# 标准打包：从 pyproject.toml 构建项目与其依赖的 wheel 包
 RUN python -m pip install --upgrade pip setuptools build \
     && pip wheel --no-cache-dir --wheel-dir /app/wheels .
 
@@ -39,7 +39,7 @@ RUN apt-get update \
     && apt-get install -y --no-install-recommends curl \
     && rm -rf /var/lib/apt/lists/*
 
-# 从 builder 复制预编译好的依赖库并安装
+# 从 builder 复制预编译好的依赖包并安装
 COPY --from=builder /app/wheels /wheels
 RUN python -m pip install --upgrade pip \
     && pip install --no-cache-dir /wheels/* \
@@ -49,7 +49,7 @@ RUN python -m pip install --upgrade pip \
 RUN useradd -m -u 1000 appuser && chown -R appuser:appuser /app
 USER appuser
 
-# 拷贝完整应用代码
+# 拷贝全量代码（包含 main.py 和 scripts/ 目录）
 COPY --chown=appuser:appuser . .
 
 EXPOSE 8000
@@ -58,6 +58,6 @@ EXPOSE 8000
 HEALTHCHECK --interval=30s --timeout=5s --start-period=5s --retries=3 \
   CMD curl -f http://localhost:8000/health || exit 1
 
-# 启动入口（根据 story-shot-agent 的脚本入口配置）
+# 使用脚本入口启动服务
 ENTRYPOINT ["python", "-m", "scripts.entrypoint"]
 CMD ["start"]

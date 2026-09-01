@@ -3,7 +3,7 @@ module_path: ""
 title: PenShot 分镜智能体项目根（发布与运行门面）
 scope:
     - README.md
-    - README_zh.md
+    - README_CN.md
     - CONTRIBUTING.md
     - SECURITY.md
     - CONTRIBUTORS.md

@@ -5,7 +5,7 @@
 @Github: https://github.com/neopen/story-shot-agent
 @Time: 2026/1/11 16:31
 """
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from enum import Enum, unique
 from typing import Optional
 
@@ -82,8 +82,8 @@ def detect_ai_provider_by_url(base_url: str) -> ClientType:
 
 @dataclass
 class AIConfig:
-    llm: LLMBaseConfig = LLMBaseConfig()
-    embed: EmbeddingBaseConfig = EmbeddingBaseConfig()
+    llm: LLMBaseConfig = field(default_factory=LLMBaseConfig)
+    embed: EmbeddingBaseConfig = field(default_factory=EmbeddingBaseConfig)
 
     # 业务开关
     cinematic_knowledge: bool = Field(default=True, description="注入影视领域知识")
