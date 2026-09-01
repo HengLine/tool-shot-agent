@@ -235,7 +235,6 @@ wget https://raw.githubusercontent.com/neopen/story-shot-agent/main/.env.example
 ### `docker run` 命令启动
 
 如果不想下载 Compose 文件，只希望直接执行 `docker run` 命令启动容器，可以通过 `-e` 参数直接将配置注入容器内部。
-
 > 密码为 123456，`host.docker.internal` 表示自动映射的宿主机IP
 
 ```bash
