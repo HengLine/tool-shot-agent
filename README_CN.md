@@ -236,16 +236,34 @@ wget https://raw.githubusercontent.com/neopen/story-shot-agent/main/.env.example
 
 如果不想下载 Compose 文件，只希望直接执行 `docker run` 命令启动容器，可以通过 `-e` 参数直接将配置注入容器内部。
 
+> 密码为 123456，`host.docker.internal` 表示自动映射的宿主机IP
+
 ```bash
+############ Linux 版
 docker run -d \
   --name penshot \
   -p 8000:8000 \
-  -e PENSHOT_LLM__DEFAULT__BASE_URL="https://api.openai.com/v1" \
-  -e PENSHOT_LLM__DEFAULT__API_KEY="sk-xxxxxxxxxxxxxxxxxx" \
-  -e PENSHOT_LLM__DEFAULT__MODEL_NAME="gpt-4o" \
-  -e PENSHOT_EMBED__DEFAULT__API_KEY="sk-xxxxxxxxxxxxxxxxxx" \
-  -e PENSHOT_REDIS_URL="redis://:123456@127.0.0.1:6379/0" \
+  -e PENSHOT_LLM__DEFAULT__BASE_URL="https://api.deepseek.com" \
+  -e PENSHOT_LLM__DEFAULT__API_KEY="sk-xxxxxxxxxxxxxxxxxxxxxxxxxxx" \
+  -e PENSHOT_LLM__DEFAULT__MODEL_NAME="deepseek-v4-flash" \
+  -e PENSHOT_EMBED__DEFAULT__BASE_URL="https://dashscope-intl.aliyuncs.com/api/v1" \
+  -e PENSHOT_EMBED__DEFAULT__API_KEY="sk-xxxxxxxxxxxxxxxxxxxxxxxxxxx" \
+  -e PENSHOT_EMBED__DEFAULT__MODEL_NAME="text-embedding-v4" \
+  -e PENSHOT_REDIS_URL="redis://123456:@host.docker.internal:6379/0" \
   ghcr.io/neopen/penshot:latest
+  
+############ Windows 版  
+docker run -d `
+  --name penshot `
+  -p 8000:8000 `
+  -e PENSHOT_LLM__DEFAULT__BASE_URL="https://api.deepseek.com" `
+  -e PENSHOT_LLM__DEFAULT__API_KEY="sk-xxxxxxxxxxxxxxxxxxxxxxxxxxx" `
+  -e PENSHOT_LLM__DEFAULT__MODEL_NAME="deepseek-v4-flash" `
+  -e PENSHOT_EMBED__DEFAULT__BASE_URL="https://dashscope-intl.aliyuncs.com/api/v1" `
+  -e PENSHOT_EMBED__DEFAULT__API_KEY="sk-xxxxxxxxxxxxxxxxxxxxxxxxxxx" `
+  -e PENSHOT_EMBED__DEFAULT__MODEL_NAME="text-embedding-v4" `
+  -e PENSHOT_REDIS_URL="redis://:@host.docker.internal:6379/0" `
+  neotems/penshot:latest  
 ```
 
 

@@ -22,7 +22,10 @@ services:
       PENSHOT_API__HOST: "0.0.0.0"
       PENSHOT_API__PORT: "8000"
       # 连接容器网络内部的 redis 服务（使用服务名 redis，密码需与下方 redis 配置匹配）
-      PENSHOT_REDIS_URL: "redis://:123456@redis:6379/0"
+      PENSHOT_REDIS_HOST: "redis"
+      PENSHOT_REDIS_PORT: 6379
+      PENSHOT_REDIS_DB: 0
+      PENSHOT_REDIS_PASSWORD: "123456"
 
     # 等待 Redis 健康就绪后再启动主应用
     depends_on:
