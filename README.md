@@ -1,4 +1,4 @@
-# PenShot：Script → Storyboard → AI Video Prompt
+# PenShot：Script → Storyboard → AI Prompt
 
 A multi-agent collaborative screenplay storyboarding system that splits scripts in various formats into script units optimized for AI text-to-video generation durations. It outputs high-quality storyboard fragment descriptions while ensuring narrative continuity. Built on LangChain and LangGraph, the system leverages LLMs to parse any script format into "Text-to-Video" prompt fragments compatible with mainstream AI video models. It supports task pool priority queuing, multi-level memory management, and Chroma vector retrieval.
 
@@ -6,7 +6,7 @@ A multi-agent collaborative screenplay storyboarding system that splits scripts 
 > **Continuity Guaranteed**: Multi-level memory + vector retrieval ensures character/scene/plot consistency across shots  
 > **Get Started in 5 Minutes**: `pip install penshot` + 3 lines of code
 
-[中文](./README_zh.md) | English | [Documentation](https://pengline.cn/2026/02/7e6cd67dd5ee45248f2276ac145555f5/) | [PyPI](https://pypi.org/project/penshot/)  | [WebSite](https://shot.helpenx.com) |  [RAG Knowledge](https://pengline.cn/2026/04/1e7f1f2a5a184427b4711cc7c1903027/) · [MCP Service](https://pengline.cn/2026/02/b027d930c0b84ba6abd24bbef7d78afc/)
+[中文](./README_CN) | English | [Documentation](https://pengline.cn/2026/02/7e6cd67dd5ee45248f2276ac145555f5/) | [PyPI](https://pypi.org/project/penshot/)  | [WebSite](https://shot.helpenx.com) |  [RAG Knowledge](https://pengline.cn/2026/04/1e7f1f2a5a184427b4711cc7c1903027/) · [MCP Service](https://pengline.cn/2026/02/b027d930c0b84ba6abd24bbef7d78afc/)
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE) [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/) [![LangGraph](https://img.shields.io/badge/built_with-LangGraph-purple)](https://langchain-ai.github.io/langgraph/) [![PyPI](https://img.shields.io/pypi/v/penshot.svg)](https://pypi.org/project/penshot/) [![Downloads](https://static.pepy.tech/badge/penshot)](https://pepy.tech/project/penshot) ![GitHub stars](https://img.shields.io/github/stars/neopen/story-shot-agent)
 
@@ -155,6 +155,44 @@ python -m penshot.mcp_server --max-concurrent 5 --queue-size 500
 
 Clients can call the `breakdown_script` and `get_task_result` tools to seamlessly integrate with MCP-compatible IDEs or agent frameworks. Full example: [mcp_client.py](https://github.com/neopen/story-shot-agent/blob/main/examples/mcp_client.py)
 
+
+
+------
+
+## Docker Quick Start
+
+### 1. Download  Config
+
+```bash
+# Docker Compose Config
+wget https://raw.githubusercontent.com/neopen/story-shot-agent/main/docker-compose.yml
+# penshot Config
+wget https://raw.githubusercontent.com/neopen/story-shot-agent/main/.env.example -O .env
+```
+
+### 2. Configuration
+
+Edit the `.env` file to configure the required LLM and Embedding parameters：`vim .env`
+
+### 3. Start Docker
+
+`docker compose up -d`
+
+---
+
+### `docker run` Start
+
+```bash
+docker run -d \
+  --name penshot \
+  -p 8000:8000 \
+  -e PENSHOT_LLM__DEFAULT__BASE_URL="https://api.openai.com/v1" \
+  -e PENSHOT_LLM__DEFAULT__API_KEY="sk-xxxxxxxxxxxxxxxxxx" \
+  -e PENSHOT_LLM__DEFAULT__MODEL_NAME="gpt-4o" \
+  -e PENSHOT_EMBED__DEFAULT__API_KEY="sk-xxxxxxxxxxxxxxxxxx" \
+  -e PENSHOT_REDIS_URL="redis://:123456@127.0.0.1:6379/0" \
+  ghcr.io/neopen/penshot:latest
+```
 
 
 ------

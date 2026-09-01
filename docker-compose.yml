@@ -1,20 +1,33 @@
 services:
-  penshot:
+  # ===================================================
+  # 1. 核心应用服务：story-shot-agent
+  # ===================================================
+  story-shot-agent:
     build:
       context: .
       dockerfile: Dockerfile
-    image: story-shot-agent:latest
-    container_name: story-shot-agent
+    image: penshot:latest
+    container_name: penshot
     restart: unless-stopped
     ports:
       - "8000:8000"
-    
-    # 自动加载 penshot 所需的 LLM / Embedding 环境变量
+
+    # 自动加载根目录下的 .env 文件（内含 LLM/Embedding API_KEY）
     env_file:
       - .env
+
+    # 容器内特定覆盖环境变量
     environment:
+      # 覆盖 API 监听地址，确保容器外部能正常访问端口
       PENSHOT_API__HOST: "0.0.0.0"
       PENSHOT_API__PORT: "8000"
+      # 连接容器网络内部的 redis 服务（使用服务名 redis，密码需与下方 redis 配置匹配）
+      PENSHOT_REDIS_URL: "redis://:123456@redis:6379/0"
+
+    # 等待 Redis 健康就绪后再启动主应用
+    depends_on:
+      redis:
+        condition: service_healthy
 
     # 健康检查联动
     healthcheck:
@@ -24,7 +37,7 @@ services:
       retries: 3
       start_period: 10s
 
-    # 容器资源上限控制
+    # 资源控制
     deploy:
       resources:
         limits:
@@ -33,9 +46,37 @@ services:
         reservations:
           memory: 512M
 
-    # 日志防暴增配置
+    # 日志切分防塞满
     logging:
       driver: "json-file"
       options:
         max-size: "10m"
         max-file: "3"
+
+  # ===================================================
+  # 2. 依赖服务：Redis 单节点
+  # ===================================================
+  redis:
+    image: redis:7-alpine
+    container_name: penshot-redis
+    restart: unless-stopped
+    # 如果需要在宿主机上直连调试 Redis，可取消下两行注释：
+    # ports:
+    #   - "6379:6379"
+
+    # 启动 Redis 并设置连接密码（请将 123456 替换为实际密码）
+    command: redis-server --requirepass 123456 --appendonly yes
+
+    # 持久化 Redis 数据
+    volumes:
+      - redis_data:/data
+
+    # Redis 健康检查
+    healthcheck:
+      test: ["CMD-SHELL", "redis-cli -a 123456 ping | grep PONG"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  redis_data:
