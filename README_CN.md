@@ -1,4 +1,4 @@
-# 剧本分镜智能体 (PenShot)：剧本 → 分镜 → AI Prompt
+# 剧本分镜智能体 (PenShot)：剧本 → 分镜 → 提示词
 
 一个基于多智能体协作的剧本分镜系统，能够将多种格式的剧本（电影、短剧、小说等）拆分为符合 AI 文生视频时长的脚本单元，输出高质量分镜片段提示词描述，并保证叙事连续性。系统基于 LangChain + LangGraph 构建，通过 LLM 将任意格式剧本解析转换为符合主流模型的“Text to Video”提示词片段，支持任务池优先级排队、多层级记忆管理与 Chroma 向量检索。
 
@@ -261,7 +261,7 @@ docker run -d `
   -e PENSHOT_EMBED__DEFAULT__BASE_URL="https://dashscope-intl.aliyuncs.com/api/v1" `
   -e PENSHOT_EMBED__DEFAULT__API_KEY="sk-xxxxxxxxxxxxxxxxxxxxxxxxxxx" `
   -e PENSHOT_EMBED__DEFAULT__MODEL_NAME="text-embedding-v4" `
-  -e PENSHOT_REDIS_URL="redis://:@host.docker.internal:6379/0" `
+  -e PENSHOT_REDIS_URL="redis://:@host.docker.internal:6379/0?protocol=2" `
   neotems/penshot:latest  
 ```
 
