@@ -40,6 +40,10 @@ class BasicViolation(BaseModel):
         default=SeverityLevel.WARNING,
         description="严重程度"
     )
+    description: Optional[str] = Field(
+        default=None,
+        description="详细描述"
+    )
     fragment_id: Optional[str] = Field(
         default=None,
         description="涉及的片段ID"
