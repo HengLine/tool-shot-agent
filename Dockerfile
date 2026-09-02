@@ -17,9 +17,9 @@ RUN apt-get update \
 COPY pyproject.toml README.md ./
 COPY src/ ./src/
 
-# 标准打包：从 pyproject.toml 构建项目与其依赖的 wheel 包
+# 🎯 核心修改：在 '.' 后面加上 '[full]'，强行构建 pyproject.toml 中 full 组的所有依赖包
 RUN python -m pip install --upgrade pip setuptools build \
-    && pip wheel --no-cache-dir --wheel-dir /app/wheels .
+    && pip wheel --no-cache-dir --wheel-dir /app/wheels .[full]
 
 
 # ==========================================
@@ -39,7 +39,7 @@ RUN apt-get update \
     && apt-get install -y --no-install-recommends curl \
     && rm -rf /var/lib/apt/lists/*
 
-# 从 builder 复制预编译好的依赖包并安装
+# 从 builder 复制预编译好的全量依赖包并安装
 COPY --from=builder /app/wheels /wheels
 RUN python -m pip install --upgrade pip \
     && pip install --no-cache-dir /wheels/* \
@@ -49,7 +49,7 @@ RUN python -m pip install --upgrade pip \
 RUN useradd -m -u 1000 appuser && chown -R appuser:appuser /app
 USER appuser
 
-# 拷贝全量代码（包含 main.py 和 scripts/ 目录）
+# 拷贝全量代码
 COPY --chown=appuser:appuser . .
 
 EXPOSE 8000
