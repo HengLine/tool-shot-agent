@@ -7,7 +7,7 @@
         1. 检查Python环境是否安装
         2. 检查虚拟环境是否存在，不存在则创建
         3. 根据不同系统激活虚拟环境
-        4. 安装项目依赖
+        4. 从 pyproject.toml 安装项目及全量依赖（含 full 组）
         5. 启动应用
     步骤严格按顺序执行，只有上一步成功才执行下一步
 @Author: HiPeng
@@ -33,14 +33,12 @@ sys.stdout.reconfigure(encoding='utf-8')
 sys.stderr.reconfigure(encoding='utf-8')
 
 VENV_DIR = os.path.join(PROJECT_ROOT, ".venv")  # 虚拟环境目录
-REQUIREMENTS_FILE = os.path.join(PROJECT_ROOT, "requirements.txt")  # 依赖文件
+PYPROJECT_FILE = os.path.join(PROJECT_ROOT, "pyproject.toml")  # 依赖声明文件
 
 
 def ensure_directories():
     """确保必要的目录存在"""
     debug("=== 确保必要的目录存在 ===")
-
-
     return True
 
 
@@ -72,7 +70,7 @@ class AppBaseEnv:
         self.pip_exe = None
         self.activate_cmd = None
         self.venv_dir = VENV_DIR
-        self.requirements_file = REQUIREMENTS_FILE
+        self.pyproject_file = PYPROJECT_FILE
         self.project_root = PROJECT_ROOT
 
     @final
@@ -115,10 +113,9 @@ class AppBaseEnv:
         info("=== 检查虚拟环境 ===")
         if os.path.exists(VENV_DIR):
             debug(f"虚拟环境已存在于 '{VENV_DIR}'，检查有效性。")
-            # 获取虚拟环境Python路径以验证虚拟环境是否有效
-            if os.name == 'nt':  # Windows系统
+            if os.name == 'nt':
                 venv_python = os.path.join(VENV_DIR, "Scripts", "python.exe")
-            else:  # 非Windows系统
+            else:
                 venv_python = os.path.join(VENV_DIR, "bin", "python")
 
             if os.path.isfile(venv_python):
@@ -146,42 +143,30 @@ class AppBaseEnv:
         debug("=== 步骤3: 获取虚拟环境路径 ===")
         python_exe, pip_exe, activate_cmd = get_virtual_environment_paths()
 
-        # 检查虚拟环境Python解释器是否存在
         if not python_exe:
             error("[错误] 无法获取虚拟环境路径。")
             return None, None
 
-        # 检查虚拟环境Python解释器是否可执行
         if not os.access(python_exe, os.X_OK):
             error(f"[错误] 虚拟环境Python解释器不可执行: {python_exe}")
             return None, None
 
-        # 检查虚拟环境pip是否可执行
-        # if not os.access(pip_exe, os.X_OK):
-        #     error(f"[错误] 虚拟环境pip不可执行: {pip_exe}")
-        #     return None, None
-
         debug(f"[成功] 虚拟环境验证通过，将使用以下路径：Python: {python_exe}")
-
-        # 注意：在subprocess中执行activate命令不会影响当前进程的环境变量
-        # 我们将直接使用虚拟环境的Python和pip完整路径来运行命令
         debug("提示：本脚本将直接使用虚拟环境的Python和pip完整路径执行后续操作，无需激活虚拟环境。")
 
         return python_exe, pip_exe
 
     @final
     def check_dependencies_satisfied(self, python_exe):
-        """检查依赖是否满足"""
+        """检查核心依赖（包括 fastapi）是否满足"""
         try:
             debug("检查依赖是否满足...")
-            # 尝试导入一些关键库来验证依赖是否安装正确
             test_imports = "import fastapi, requests, json, os, sys"
-            result = self.run_command(f"{python_exe} -c \"{test_imports}\"", capture_output=True)
+            result = self.run_command(f'"{python_exe}" -c "{test_imports}"', capture_output=True)
 
             if result and hasattr(result, 'returncode') and result.returncode != 0:
-                # python.exe -m pip install --upgrade pip
                 error(f"依赖检查失败: {result.stderr}")
-                self.run_command(f"{python_exe} -m pip install --upgrade pip")
+                self.run_command(f'"{python_exe}" -m pip install --upgrade pip')
                 return False
 
             debug("依赖检查通过")
@@ -192,19 +177,22 @@ class AppBaseEnv:
 
     @final
     def install_dependencies(self, pip_exe):
-        """步骤4: 安装项目依赖"""
-        info("=== 安装项目依赖 ===")
-        if not os.path.exists(REQUIREMENTS_FILE):
-            warning(f"[警告] 依赖文件 {REQUIREMENTS_FILE} 不存在！")
+        """步骤4: 从 pyproject.toml 安装项目及其 full 级别依赖"""
+        info("=== 安装项目依赖 (pyproject.toml [full]) ===")
+        if not os.path.exists(PYPROJECT_FILE):
+            warning(f"[警告] 配置文件 {PYPROJECT_FILE} 不存在！")
             return False
 
-        debug(f"使用虚拟环境pip安装项目依赖包（{REQUIREMENTS_FILE}）...")
+        debug(f"使用虚拟环境pip从 pyproject.toml 安装全量依赖 (.[full])...")
 
-        # 使用虚拟环境的pip安装项目依赖
-        result = self.run_command(f'"{pip_exe}" install -r "{REQUIREMENTS_FILE}"')
-        # result = self.run_command(f'pip install -r requirements.txt"')
+        # 1. 优先升级 pip 和 build/setuptools 工具
+        self.run_command(f'"{pip_exe}" install --upgrade pip setuptools build')
+
+        # 2. 从 pyproject.toml 以可编辑模式(-e)安装全量 [full] 组依赖
+        result = self.run_command(f'"{pip_exe}" install -e ".[full]"')
+
         if result and hasattr(result, 'returncode') and result.returncode == 0:
-            debug("[成功] 依赖安装成功。")
+            debug("[成功] 依赖及项目全量安装成功。")
             return True
         else:
             error("[错误] 依赖安装失败！")
@@ -215,7 +203,6 @@ class AppBaseEnv:
         """步骤5: 启动FastAPI应用"""
         info("=== 启动FastAPI应用 ===")
 
-        # 确保必要的目录存在
         if not ensure_directories():
             return False
 
@@ -223,9 +210,7 @@ class AppBaseEnv:
             info("<<<<<<<<<<<<<<<<<<<<  Neopen 剧本分镜智能体 >>>>>>>>>>>>>>>>>>>>")
             info("应用启动中，请不要关闭此窗口。如果需要停止应用，请按 Ctrl+C")
 
-            # 启动应用
             self.retries_start_application(max_retries)
-
             return True
         except subprocess.CalledProcessError as e:
             error(f"[错误] 应用启动失败: {e}")
@@ -244,7 +229,6 @@ class AppBaseEnv:
 
         while retry_count < max_retries:
             try:
-                # 重新获取pip路径并安装依赖
                 _, pip_exe_retry, _ = get_virtual_environment_paths()
                 if not pip_exe_retry:
                     error("无法获取虚拟环境pip路径")
@@ -256,10 +240,9 @@ class AppBaseEnv:
                     else:
                         return False
 
-                # 使用虚拟环境的Python启动Streamlit应用
                 result = self.start_application()
                 if result and hasattr(result, 'returncode') and result.returncode == 1:
-                    if not self.install_dependencies(self):
+                    if not self.install_dependencies(pip_exe_retry):
                         error("依赖重新安装失败")
                     retry_count += 1
                     continue
@@ -269,8 +252,8 @@ class AppBaseEnv:
                 info("应用已被用户中断。")
                 return True
             except ModuleNotFoundError:
-                error("缺少依赖模块，请检查requirements.txt")
-                if not self.install_dependencies(self):
+                error("缺少依赖模块，请检查 pyproject.toml")
+                if not self.install_dependencies(pip_exe_retry):
                     error("依赖重新安装失败")
                 retry_count += 1
 
@@ -312,7 +295,6 @@ class AppBaseEnv:
             sys.exit(1)
 
         # 步骤4: 安装项目依赖
-        # 先检查依赖是否已满足，如果满足则跳过安装
         if not self.check_dependencies_satisfied(python_exe):
             warning("依赖不满足，需要安装...")
             if not self.install_dependencies(pip_exe):
@@ -326,8 +308,6 @@ class AppBaseEnv:
 
         info(">>>>>>>>>>>>>>>>> Neopen 剧本分镜智能体 <<<<<<<<<<<<<<<<<")
         info("应用程序已停止运行。按Enter键退出...")
-
-    """    需要子类实现的抽象方法，用于启动具体的应用"""
 
     @abstractmethod
     def start_application(self):
