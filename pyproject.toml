@@ -45,7 +45,7 @@ classifiers = [
 # ============================================================================
 dependencies = [
     # Web框架
-    #    "fastapi>=0.104.0",
+    "fastapi>=0.104.0",
     "uvicorn[standard]>=0.24.0",
     # 核心AI/LLM
     "langchain>=1.2.14",
