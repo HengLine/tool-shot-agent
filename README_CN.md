@@ -1,15 +1,22 @@
 # 剧本分镜智能体 (PenShot)：剧本 → 分镜 → 提示词
 
+------
+
+中文 | [English](./README.md) | [文档](https://pengline.cn/2026/02/7e6cd67dd5ee45248f2276ac145555f5/) | [PyPI](https://pypi.org/project/penshot/) | [官网](https://shot.helpenx.com/)（在线演示） |  [详细集成指南](https://pengline.cn/2026/02/df16e7d36e5d41d2ad9d7934b28f94e4/) ·  [RAG 知识库](https://pengline.cn/2026/04/1e7f1f2a5a184427b4711cc7c1903027/) · [MCP 服务](https://pengline.cn/2026/02/b027d930c0b84ba6abd24bbef7d78afc/)
+
+[![Built with LangGraph](https://img.shields.io/badge/LangChain%20%7C%20LangGraph%20%7C%20LlamaIndex-1C3C3C.svg?style=flat-square&logo=langchain&logoColor=white)](https://langchain-ai.github.io/langgraph/) [![Supported LLMs](https://img.shields.io/badge/LLMs-OpenAI%20%7C%20DeepSeek%20%7C%20Qwen-4E6BFF.svg?style=flat-square)](https://github.com/neopen/story-shot-agent) [![Redis](https://img.shields.io/badge/Redis-DC382D.svg?style=flat-square&logo=redis&logoColor=white)](https://redis.io/) [![Python Version](https://img.shields.io/badge/python-3.10+-3776AB.svg?style=flat-square&logo=python&logoColor=white)](https://www.python.org/) [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg?style=flat-square)](LICENSE)
+
+[![PyPI Version](https://img.shields.io/pypi/v/penshot.svg?style=flat-square&logo=pypi&logoColor=white)](https://pypi.org/project/penshot/) [![Docker Pulls](https://img.shields.io/docker/pulls/neotems/penshot?style=flat-square&logo=docker&logoColor=white)](https://hub.docker.com/r/neotems/penshot) [![PyPI Downloads](https://img.shields.io/pepy/dt/penshot?style=flat-square&color=blue)](https://pepy.tech/project/penshot) [![GitHub Stars](https://img.shields.io/github/stars/neopen/story-shot-agent?style=flat-square&logo=github)](https://github.com/neopen/story-shot-agent)
+
+
+
+------
+
 一个基于多智能体协作的剧本分镜系统，能够将多种格式的剧本（电影、短剧、小说等）拆分为符合 AI 文生视频时长的脚本单元，输出高质量分镜片段提示词描述，并保证叙事连续性。系统基于 LangChain + LangGraph 构建，通过 LLM 将任意格式剧本解析转换为符合主流模型的“Text to Video”提示词片段，支持任务池优先级排队、多层级记忆管理与 Chroma 向量检索。
 
 >  **一键转换**：任意格式剧本 → 镜头级分镜描述 → Sora/Veo/Runway/Kling 等模型就绪的 Prompt  
 > **连续性保障**：多级记忆 + 向量检索，确保角色/场景/剧情跨片段一致  
 > **5 分钟上手**：`pip install penshot` + 3 行代码集成
-
-中文 | [English](./README.md) | [文档](https://pengline.cn/2026/02/7e6cd67dd5ee45248f2276ac145555f5/) | [PyPI](https://pypi.org/project/penshot/) | [官网](https://shot.helpenx.com/)（在线演示） |  [详细集成指南](https://pengline.cn/2026/02/df16e7d36e5d41d2ad9d7934b28f94e4/) ·  [RAG 知识库](https://pengline.cn/2026/04/1e7f1f2a5a184427b4711cc7c1903027/) · [MCP 服务](https://pengline.cn/2026/02/b027d930c0b84ba6abd24bbef7d78afc/)
-
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE) [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/) [![LangGraph](https://img.shields.io/badge/built_with-LangGraph-purple)](https://langchain-ai.github.io/langgraph/) [![PyPI](https://img.shields.io/pypi/v/penshot.svg)](https://pypi.org/project/penshot/) [![Downloads](https://static.pepy.tech/badge/penshot)](https://pepy.tech/project/penshot)
-
 
 
 ---

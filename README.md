@@ -1,4 +1,17 @@
-# PenShot：Script → Storyboard → AI Prompt
+# PenShot：Script → Storyboard → Prompt
+
+------
+
+[中文](./README_CN.md) | English | [Documentation](https://pengline.cn/2026/02/7e6cd67dd5ee45248f2276ac145555f5/) | [PyPI](https://pypi.org/project/penshot/)  | [WebSite](https://shot.helpenx.com) |  [RAG Knowledge](https://pengline.cn/2026/04/1e7f1f2a5a184427b4711cc7c1903027/) · [MCP Service](https://pengline.cn/2026/02/b027d930c0b84ba6abd24bbef7d78afc/)
+
+
+[![Built with LangGraph](https://img.shields.io/badge/LangChain%20%7C%20LangGraph%20%7C%20LlamaIndex-1C3C3C.svg?style=flat-square&logo=langchain&logoColor=white)](https://langchain-ai.github.io/langgraph/) [![Supported LLMs](https://img.shields.io/badge/LLMs-OpenAI%20%7C%20DeepSeek%20%7C%20Qwen-4E6BFF.svg?style=flat-square)](https://github.com/neopen/story-shot-agent) [![Redis](https://img.shields.io/badge/Redis-DC382D.svg?style=flat-square&logo=redis&logoColor=white)](https://redis.io/) [![Python Version](https://img.shields.io/badge/python-3.10+-3776AB.svg?style=flat-square&logo=python&logoColor=white)](https://www.python.org/) [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg?style=flat-square)](LICENSE)
+
+[![PyPI Version](https://img.shields.io/pypi/v/penshot.svg?style=flat-square&logo=pypi&logoColor=white)](https://pypi.org/project/penshot/) [![Docker Pulls](https://img.shields.io/docker/pulls/neotems/penshot?style=flat-square&logo=docker&logoColor=white)](https://hub.docker.com/r/neotems/penshot) [![PyPI Downloads](https://img.shields.io/pepy/dt/penshot?style=flat-square&color=blue)](https://pepy.tech/project/penshot) [![GitHub Stars](https://img.shields.io/github/stars/neopen/story-shot-agent?style=flat-square&logo=github)](https://github.com/neopen/story-shot-agent)
+
+
+
+------
 
 A multi-agent collaborative screenplay storyboarding system that splits scripts in various formats into script units optimized for AI text-to-video generation durations. It outputs high-quality storyboard fragment descriptions while ensuring narrative continuity. Built on LangChain and LangGraph, the system leverages LLMs to parse any script format into "Text-to-Video" prompt fragments compatible with mainstream AI video models. It supports task pool priority queuing, multi-level memory management, and Chroma vector retrieval.
 
@@ -6,11 +19,6 @@ A multi-agent collaborative screenplay storyboarding system that splits scripts 
 > **Continuity Guaranteed**: Multi-level memory + vector retrieval ensures character/scene/plot consistency across shots  
 > **Get Started in 5 Minutes**: `pip install penshot` + 3 lines of code
 
-
-[中文](./README_CN.md) | English | [Documentation](https://pengline.cn/2026/02/7e6cd67dd5ee45248f2276ac145555f5/) | [PyPI](https://pypi.org/project/penshot/)  | [WebSite](https://shot.helpenx.com) |  [RAG Knowledge](https://pengline.cn/2026/04/1e7f1f2a5a184427b4711cc7c1903027/) · [MCP Service](https://pengline.cn/2026/02/b027d930c0b84ba6abd24bbef7d78afc/)
-
-
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE) [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/) [![LangGraph](https://img.shields.io/badge/built_with-LangGraph-purple)](https://langchain-ai.github.io/langgraph/) [![PyPI](https://img.shields.io/pypi/v/penshot.svg)](https://pypi.org/project/penshot/) [![Downloads](https://static.pepy.tech/badge/penshot)](https://pepy.tech/project/penshot) ![GitHub stars](https://img.shields.io/github/stars/neopen/story-shot-agent)
 
 **From Story to Shot** - Transform your scripts into AI-powered storyboards.
 
