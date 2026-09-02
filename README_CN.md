@@ -1,7 +1,5 @@
 # 剧本分镜智能体 (PenShot)：剧本 → 分镜 → 提示词
 
-------
-
 中文 | [English](./README.md) | [文档](https://pengline.cn/2026/02/7e6cd67dd5ee45248f2276ac145555f5/) | [PyPI](https://pypi.org/project/penshot/) | [官网](https://shot.helpenx.com/)（在线演示） |  [详细集成指南](https://pengline.cn/2026/02/df16e7d36e5d41d2ad9d7934b28f94e4/) ·  [RAG 知识库](https://pengline.cn/2026/04/1e7f1f2a5a184427b4711cc7c1903027/) · [MCP 服务](https://pengline.cn/2026/02/b027d930c0b84ba6abd24bbef7d78afc/)
 
 [![Built with LangGraph](https://img.shields.io/badge/LangChain%20%7C%20LangGraph%20%7C%20LlamaIndex-1C3C3C.svg?style=flat-square&logo=langchain&logoColor=white)](https://langchain-ai.github.io/langgraph/) [![Supported LLMs](https://img.shields.io/badge/LLMs-OpenAI%20%7C%20DeepSeek%20%7C%20Qwen-4E6BFF.svg?style=flat-square)](https://github.com/neopen/story-shot-agent) [![Redis](https://img.shields.io/badge/Redis-DC382D.svg?style=flat-square&logo=redis&logoColor=white)](https://redis.io/) [![Python Version](https://img.shields.io/badge/python-3.10+-3776AB.svg?style=flat-square&logo=python&logoColor=white)](https://www.python.org/) [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg?style=flat-square)](LICENSE)
