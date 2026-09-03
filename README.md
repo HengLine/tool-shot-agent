@@ -74,11 +74,7 @@ A multi-agent collaborative screenplay storyboarding system built on **LangChain
 </p>
 
 <details>
-<summary>🔍 <strong>Click to view detailed UML Class Architecture And Roadmap</strong></summary>
-
-<p align="center">
-  <img src="./assets/imgs/penshot-roadmap.webp" alt="PenShot Workflow" width="100%">
-</p>
+<summary>🔍 <strong>Click to view detailed UML Class Architecture</strong></summary>
 
 <p align="center">
   <img src="./assets/imgs/penshot.webp" alt="PenShot UML Architecture" width="100%">
@@ -357,6 +353,10 @@ Edit the `.env` file to configure the required LLM and Embedding parameters：`v
 ------
 
 ## Development Roadmap
+
+<p align="center">
+  <img src="./assets/imgs/penshot-roadmap.webp" alt="PenShot Workflow" width="100%">
+</p>
 
 ### Short-Term
 
