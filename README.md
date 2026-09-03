@@ -175,6 +175,35 @@ python -m penshot.mcp_server --max-concurrent 5 --queue-size 500
 Clients can call the `breakdown_script` and `get_task_result` tools to seamlessly integrate with MCP-compatible IDEs or agent frameworks. Full example: [mcp_client.py](https://github.com/neopen/story-shot-agent/blob/main/examples/mcp_client.py)
 
 
+<details>
+<summary>🔍 <strong>Click to view detailed Output Data Structure</strong></summary>
+
+
+The system returns standardized JSON containing video prompts, negative prompts, duration estimates, style parameters, and accompanying audio prompts:
+
+```json
+{
+  "fragments": [
+    {
+      "fragment_id": "frag_001",
+      "prompt": "Cinematic wide shot: midnight 11 PM in a compact urban apartment living room...",
+      "negative_prompt": "cartoon, anime, 3D render, bright lighting, text, watermark...",
+      "duration": 4.2,
+      "model": "runway_gen2",
+      "style": "cinematic 35mm film, moody realism, shallow depth of field...",
+      "audio_prompt": {
+        "audio_id": "audio_001",
+        "prompt": "Low-frequency rain ambience (intensity 0.95), distant muffled TV static...",
+        "model_type": "AudioLDM_3",
+        "audio_style": "cinematic"
+      }
+    }
+  ]
+}
+```
+
+</details>
+
 
 ------
 
@@ -209,35 +238,6 @@ Edit the `.env` file to configure the required LLM and Embedding parameters：`v
 ### 3. Start Docker
 
 `docker compose up -d`
-
-
-
-------
-
-## Output Data Structure
-
-The system returns standardized JSON containing video prompts, negative prompts, duration estimates, style parameters, and accompanying audio prompts:
-
-```json
-{
-  "fragments": [
-    {
-      "fragment_id": "frag_001",
-      "prompt": "Cinematic wide shot: midnight 11 PM in a compact urban apartment living room...",
-      "negative_prompt": "cartoon, anime, 3D render, bright lighting, text, watermark...",
-      "duration": 4.2,
-      "model": "runway_gen2",
-      "style": "cinematic 35mm film, moody realism, shallow depth of field...",
-      "audio_prompt": {
-        "audio_id": "audio_001",
-        "prompt": "Low-frequency rain ambience (intensity 0.95), distant muffled TV static...",
-        "model_type": "AudioLDM_3",
-        "audio_style": "cinematic"
-      }
-    }
-  ]
-}
-```
 
 
 
