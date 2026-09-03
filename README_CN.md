@@ -78,11 +78,7 @@
 
 
 <details>
-<summary>🔍 <strong>点击查看 《基础架构 UML 与 架构演进路线图》</strong></summary>
-
-<p align="center">
-  <img src="./assets/imgs/penshot-roadmap-cn.webp" alt="架构演进路线图之基础阶段" width="100%">
-</p>
+<summary>🔍 <strong>点击查看 《基础架构 UML 图》</strong></summary>
 
 <p align="center">
   
@@ -444,6 +440,11 @@ docker run -d `
 ------
 
 ## 开发路线图
+
+<p align="center">
+  <img src="./assets/imgs/penshot-roadmap-cn.webp" alt="架构演进路线图之基础阶段" width="100%">
+</p>
+
 
 ### 短期规划
 
