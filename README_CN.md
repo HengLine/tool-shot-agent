@@ -74,7 +74,7 @@
 <summary>🔍 <strong>点击查看 《基础架构 UML 与 架构演进路线图》</strong></summary>
 
 <p align="center">
-![PenShot 架构演进路线图之基础阶段](./assets/imgs/penshot-roadmap-cn.webp)
+  <img src="./assets/imgs/penshot-roadmap-cn.webp" alt="架构演进路线图之基础阶段" width="100%">
 </p>
 
 <p align="center">
