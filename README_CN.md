@@ -67,11 +67,15 @@
 
 ## 系统架构与创作流程
 
-![PenShot 架构演进路线图之基础阶段](./assets/imgs/PenShot%20%E6%9E%B6%E6%9E%84%E6%BC%94%E8%BF%9B%E8%B7%AF%E7%BA%BF%E5%9B%BE%E4%B9%8B%E5%9F%BA%E7%A1%80%E9%98%B6%E6%AE%B5.webp)
+![PenShot 创作流程](./assets/imgs/penshot-uml-cn.webp)
 
 
 <details>
-<summary>🔍 <strong>点击查看 《基础架构 UML》</strong></summary>
+<summary>🔍 <strong>点击查看 《基础架构 UML 与 架构演进路线图》</strong></summary>
+
+<p align="center">
+![PenShot 架构演进路线图之基础阶段](./assets/imgs/penshot-roadmap-cn.webp)
+</p>
 
 <p align="center">
   
