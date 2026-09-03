@@ -6,27 +6,29 @@
   <p align="center">
     <a href="https://langchain-ai.github.io/langgraph/"><img src="https://img.shields.io/badge/LangGraph-1C3C3C.svg?style=flat-square&logo=langchain&logoColor=white" alt="LangGraph"></a>
     <a href="https://www.llamaindex.ai/"><img src="https://img.shields.io/badge/LlamaIndex-000000.svg?style=flat-square&logo=llamaindex&logoColor=white" alt="LlamaIndex"></a>
-    <a href="https://github.com/neopen/story-shot-agent"><img src="https://img.shields.io/badge/LLMs-DeepSeek%20%7C%20OpenAI-4E6BFF.svg?style=flat-square" alt="LLMs"></a>
+    <a href="https://github.com/neopen/story-shot-agent"><img src="https://img.shields.io/badge/LLMs-DeepSeek%20%7C%20OpenAI%20%7C%20Qwen-4E6BFF.svg?style=flat-square" alt="LLMs"></a>
+    <a href="https://redis.io/"><img src="https://img.shields.io/badge/Redis-DC382D.svg?style=flat-square&logo=redis&logoColor=white" alt="Redis"></a>
     <a href="https://www.python.org/"><img src="https://img.shields.io/badge/python-3.10+-3776AB.svg?style=flat-square&logo=python&logoColor=white" alt="Python"></a>
     <a href="https://pypi.org/project/penshot/"><img src="https://img.shields.io/pypi/v/penshot.svg?style=flat-square&logo=pypi&logoColor=white" alt="PyPI"></a>
-    <a href="https://pepy.tech/project/penshot"><img src="https://img.shields.io/pepy/dt/penshot?style=flat-square&color=blue" alt="Downloads"></a>
+    <a href="https://hub.docker.com/r/neotems/penshot"><img src="https://img.shields.io/docker/pulls/neotems/penshot?style=flat-square&logo=docker&logoColor=white" alt="Docker Pulls"></a>
     <a href="https://github.com/neopen/story-shot-agent"><img src="https://img.shields.io/github/stars/neopen/story-shot-agent?style=flat-square&logo=github" alt="GitHub Stars"></a>
     <a href="./LICENSE"><img src="https://img.shields.io/badge/License-MIT-green.svg?style=flat-square" alt="License"></a>
   </p>
   <p align="center">
     <a href="./README_CN.md">中文</a> •
-    <a href="https://pengline.cn/2026/02/7e6cd67dd5ee45248f2276ac145555f5/">Documentation</a> •
-    <a href="https://pypi.org/project/penshot/">PyPI</a> •
     <a href="https://shot.helpenx.com">WebSite</a> •
-    <a href="https://pengline.cn/2026/02/b027d930c0b84ba6abd24bbef7d78afc/">MCP Service</a>
+    <a href="https://pengline.cn/2026/02/7e6cd67dd5ee45248f2276ac145555f5/">Documentation</a> • 
+    <a href="https://pengline.cn/2026/02/b027d930c0b84ba6abd24bbef7d78afc/">MCP Service</a> •
+    <a href="https://pypi.org/project/penshot/">PyPI</a>
   </p>
 </p>
 
 ---
 
-> 🚀 **One-Click Conversion**: Any screenplay format → Shot-level descriptions → **Sora / Veo / Runway / Kling-ready prompts**  
-> 🧠 **Continuity Guaranteed**: Multi-level memory + vector retrieval ensures character/scene/plot consistency across shots  
-> ⚡ **Get Started in 5 Minutes**: `pip install penshot` + 3 lines of code
+> 🚀 **One-Click Conversion**: Any screenplay format (Film, Short Drama, Anime, Novel, etc.) → Shot-level descriptions → **Sora / Veo / Runway / Kling-ready prompts**  
+> 🧠 **Continuity Guaranteed**: Multi-view references + RAG Knowledge + Multi-level memory + Chroma vector retrieval + Snapshotting + Multi-dimensional recall ensure character/scene/plot consistency across shots  
+> 🔌 **Multi-Ecosystem Support**: Out-of-the-box support for **Python SDK, MCP Service, Function Calling, REST API, and LangGraph Nodes**  
+> ⚡ **Get Started in 5 Minutes**: `pip install penshot` + 3 lines of code, or start service with `docker pull neotems/penshot`
 
 ---
 
