@@ -25,9 +25,12 @@
 
 ---
 
-> 🚀 **One-Click Conversion**: Any screenplay format (Film, Short Drama, Anime, Novel, etc.) → Shot-level descriptions → **Sora / Veo / Runway / Kling-ready prompts**  
-> 🧠 **Continuity Guaranteed**: Multi-view references + RAG Knowledge + Multi-level memory + Chroma vector retrieval + Snapshotting + Multi-dimensional recall ensure character/scene/plot consistency across shots  
-> 🔌 **Multi-Ecosystem Support**: Out-of-the-box support for **Python SDK, MCP Service, Function Calling, REST API, and LangGraph Nodes**  
+> 🚀 **One-Click Conversion**: Any screenplay format (Film, Short Drama, Anime, Novel, etc.) → Shot-level descriptions → **Sora / Veo / Runway / Kling-ready prompts**
+> 
+> 🧠 **Continuity Guaranteed**: Multi-view references + RAG Knowledge + Multi-level memory + Chroma vector retrieval + Snapshotting + Multi-dimensional recall ensure character/scene/plot consistency across shots
+> 
+> 🔌 **Multi-Ecosystem Support**: Out-of-the-box support for **Python SDK, MCP Service, Function Calling, REST API, and LangGraph Nodes**
+> 
 > ⚡ **Get Started in 5 Minutes**: `pip install penshot` + 3 lines of code, or start service with `docker pull neotems/penshot`
 
 ---
