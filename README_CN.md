@@ -69,8 +69,12 @@
 
 ![PenShot 架构演进路线图之基础阶段](./assets/imgs/PenShot%20%E6%9E%B6%E6%9E%84%E6%BC%94%E8%BF%9B%E8%B7%AF%E7%BA%BF%E5%9B%BE%E4%B9%8B%E5%9F%BA%E7%A1%80%E9%98%B6%E6%AE%B5.webp)
 
-基础架构 UML：
 
+<details>
+<summary>🔍 <strong>点击查看 《基础架构 UML》</strong></summary>
+
+<p align="center">
+  
 ```mermaid
 flowchart TD
     subgraph Input [输入层]
@@ -130,6 +134,9 @@ flowchart TD
     P7 --> O1
     O3 --> D1
 ```
+</p>
+
+</details>
 
 该系统为典型的自然语言处理（NLP）应用场景，通过多智能体协作与记忆机制实现端到端的分镜转码。详细架构设计、记忆池实现与一致性保障机制请参考：[《架构设计与实现》](https://pengline.cn/2026/02/7e6cd67dd5ee45248f2276ac145555f5/)
 
@@ -229,6 +236,125 @@ python -m penshot.mcp_server --max-concurrent 5 --queue-size 500
 
 
 
+<details>
+<summary>🔍 <strong>点击查看输出数据结构</strong></summary>
+
+
+系统返回标准化的 JSON 格式，包含视频提示词、负面提示词、时长估算、风格参数及配套的音频提示词：
+
+```json
+{
+  "fragments": [
+    {
+      "fragment_id": "frag_001",
+      "prompt": "wide shot, late night 11 PM, dim city apartment living room, heavy rain outside window, rain muffled by glass, Lin Ran wrapped in gray worn wool blanket curled on gray sofa, TV playing silent black-and-white old movie, light and shadows flickering on wall, half-drunk cold tea on coffee table with condensation, brown old photo album with worn leather cover and faded photos, black phone with dark screen on corner of table, Fujifilm ETERNA grading, natural overcast lighting, 35mm lens, static camera\n\n全景镜头：深夜11点，昏暗的城市公寓客厅，窗外大雨滂沱，雨声被玻璃隔绝，林然裹着灰色旧羊毛毯蜷在灰色沙发上，电视静音播放黑白老电影，光影在墙上晃动，茶几上半杯凉茶凝出水雾，旁边摊开一本棕色旧相册，封面皮革磨损，内页照片褪色，手机黑色屏幕暗着放在茶几一角，富士ETERNA色调，阴天自然光，35mm镜头，静态镜头",
+      "negative_prompt": "bright lighting, sunny, dry room, modern decor, colorful, cartoon style, blurry details, wrong blanket color, wrong phone color",
+      "main_character": "",
+      "duration": 4.63,
+      "model": "runway_gen2",
+      "style": "cinematic realism, Fujifilm ETERNA, dim interior",
+      "audio": {
+        "audio_id": "audio_001",
+        "prompt": "heavy rain against window, muffled thunder, distant city hum, silence of TV static, occasional creak of old sofa, condensation drip\n\n窗外大雨滂沱，雷声低沉，远处城市嗡鸣，电视静音静电声，旧沙发偶尔吱嘎，水雾凝结滴落",
+        "negative_prompt": "noisy, low quality, distorted, robotic, bad audio",
+        "model_type": "AudioLDM_3",
+        "voice_type": "narration",
+        "audio_style": "cinematic",
+        "voice_character": "",
+        "voice_description": "deep, resonant, calm, slightly melancholic",
+        "speed": 1,
+        "pitch_shift": 0,
+        "emotion": "melancholic",
+        "stability": 0.7,
+        "duration_seconds": 4.63,
+        "sound_attributes": {
+          "intensity": 0.8,
+          "reverb": 0.3
+        },
+        "format": "wav",
+        "sample_rate": 24000,
+        "seed": 751512420,
+        "scene_context": "late night, dim apartment living room, heavy rain outside, silent TV, old photo album, condensation on glass",
+        "previous_audio_id": null
+      }
+    },
+    {
+      "fragment_id": "frag_002",
+      "prompt": "medium shot, cinematic lighting, heavy rain outside window, Lin Ran wrapped in gray worn wool blanket, curled up on sofa, phone screen lights up showing 'Unknown Number', staring at screen for three seconds, finger hovering over answer button, throat moving slightly, finally pressing answer button, bringing phone to ear, tense atmosphere, Fujifilm ETERNA grading, natural overcast, 35mm lens\n\n中景镜头：窗外大雨，林然裹着灰色旧羊毛毯蜷在沙发上，手机屏幕亮起显示'未知号码'，盯着屏幕看了三秒，指尖悬停在接听键上方，喉头轻轻滚动，终于按下接听，将手机贴到耳边，紧张氛围，富士ETERNA色调，阴天自然光，35mm镜头",
+      "negative_prompt": "blurry screen, wrong blanket color, smiling, bright lighting, cartoon style",
+      "main_character": "",
+      "duration": 2,
+      "model": "runway_gen2",
+      "style": "cinematic realism, Fujifilm ETERNA",
+      "requires_special_attention": false,
+      "audio": {
+        "audio_id": "audio_002",
+        "prompt": "continuous heavy rain outside window, phone vibrating, brief silence, soft breathing, rain pattering on glass\n\n窗外持续的大雨声，手机震动声，短暂沉默，轻柔的呼吸声，雨点打在玻璃上的声音",
+        "negative_prompt": "noisy, low quality, distorted, robotic, bad audio",
+        "model_type": "AudioLDM_3",
+        "voice_type": "narration",
+        "audio_style": "cinematic",
+        "voice_character": "Lin Ran",
+        "voice_description": "soft female voice, slightly trembling, tense",
+        "speed": 1,
+        "pitch_shift": 0,
+        "emotion": "tense",
+        "stability": 0.7,
+        "duration_seconds": 2,
+        "sound_attributes": {
+          "intensity": 0.8,
+          "reverb": 0.3
+        },
+        "format": "wav",
+        "sample_rate": 24000,
+        "seed": 751512420,
+        "scene_context": "Lin Ran in dark living room, heavy rain outside, phone vibrating with unknown caller",
+        "previous_audio_id": "audio_001"
+      }
+    },
+    {
+      "fragment_id": "frag_003",
+      "prompt": "extreme close-up, cinematic lighting, dim apartment, Lin Ran pressing black smartphone to ear, rain against window, tense atmosphere, shallow depth of field, Fujifilm ETERNA grading, natural overcast, 35mm lens\n\n极端特写镜头：林然将黑色手机贴紧耳边，窗外大雨，紧张氛围，浅景深，富士ETERNA色调，阴天自然光，35mm镜头",
+      "negative_prompt": "blurry phone, wrong phone color, smiling, bright lighting, cartoon style",
+      "main_character": "",
+      "duration": 3,
+      "model": "runway_gen2",
+      "style": "cinematic realism, Fujifilm ETERNA",
+      "requires_special_attention": false,
+      "audio": {
+        "audio_id": "audio_003",
+        "prompt": "continuous heavy rain, faint static from phone, low male voice whispering 'It's me', tense silence\n\n持续的大雨声，手机微弱的静电声，低沉男声低语'是我'，紧张的沉默",
+        "negative_prompt": "noisy, low quality, distorted, robotic, bad audio",
+        "model_type": "AudioLDM_3",
+        "voice_type": "character_dialogue",
+        "audio_style": "cinematic",
+        "voice_character": "陈默",
+        "voice_description": "low, husky male voice, tense and mysterious",
+        "speed": 1,
+        "pitch_shift": -2,
+        "emotion": "tense",
+        "stability": 0.7,
+        "duration_seconds": 3,
+        "sound_attributes": {
+          "intensity": 0.8,
+          "reverb": 0.3
+        },
+        "format": "wav",
+        "sample_rate": 24000,
+        "seed": 751512420,
+        "scene_context": "close-up of Lin Ran holding phone to ear in dim apartment, heavy rain outside",
+        "previous_audio_id": "audio_002"
+      }
+    }
+  ]
+}
+```
+
+</details>
+
+
+
+
 ------
 
 ## Docker 快速部署
@@ -285,35 +411,6 @@ docker run -d `
   -e PENSHOT_EMBED__DEFAULT__MODEL_NAME="text-embedding-v4" `
   -e PENSHOT_REDIS_URL="redis://:@host.docker.internal:6379/0?protocol=2" `
   neotems/penshot:latest  
-```
-
-
-
-------
-
-## 输出数据结构
-
-系统返回标准化的 JSON 格式，包含视频提示词、负面提示词、时长估算、风格参数及配套的音频提示词：
-
-```json
-{
-  "fragments": [
-    {
-      "fragment_id": "frag_001",
-      "prompt": "Cinematic wide shot: midnight 11 PM in a compact urban apartment living room...",
-      "negative_prompt": "cartoon, anime, 3D render, bright lighting, text, watermark...",
-      "duration": 4.2,
-      "model": "runway_gen2",
-      "style": "cinematic 35mm film, moody realism, shallow depth of field...",
-      "audio_prompt": {
-        "audio_id": "audio_001",
-        "prompt": "Low-frequency rain ambience (intensity 0.95), distant muffled TV static...",
-        "model_type": "AudioLDM_3",
-        "audio_style": "cinematic"
-      }
-    }
-  ]
-}
 ```
 
 
