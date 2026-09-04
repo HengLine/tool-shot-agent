@@ -1,72 +1,88 @@
-# PenShot：Script → Storyboard → Prompt
+<p align="center">
+  <h1 align="center">🎬 PenShot: Script → Storyboard → Prompt</h1>
+  <p align="center">
+    <strong>A multi-agent collaborative screenplay storyboarding system with narrative continuity.</strong>
+  </p>
+  
+<p align="center">
+  <!-- 第一行：技术栈与生态依赖 -->
+  <a href="https://langchain-ai.github.io/langgraph/"><img src="https://img.shields.io/badge/LangGraph-1C3C3C.svg?style=flat-square&logo=langchain&logoColor=white" alt="LangGraph"></a>
+  <a href="https://www.llamaindex.ai/"><img src="https://img.shields.io/badge/LlamaIndex-000000.svg?style=flat-square&logo=llamaindex&logoColor=white" alt="LlamaIndex"></a>
+  <a href="https://github.com/neopen/story-shot-agent"><img src="https://img.shields.io/badge/LLMs-DeepSeek%20%7C%20OpenAI%20%7C%20Qwen-4E6BFF.svg?style=flat-square" alt="LLMs"></a>
+  <a href="https://redis.io/"><img src="https://img.shields.io/badge/Redis-DC382D.svg?style=flat-square&logo=redis&logoColor=white" alt="Redis"></a>
+  <a href="https://www.python.org/"><img src="https://img.shields.io/badge/python-3.10+-3776AB.svg?style=flat-square&logo=python&logoColor=white" alt="Python"></a>
+</p>
+<p align="center">
+  <!-- 第二行：包版本、社区数据与许可证 -->
+  <a href="https://pypi.org/project/penshot/"><img src="https://img.shields.io/pypi/v/penshot.svg?style=flat-square&logo=pypi&logoColor=white" alt="PyPI"></a>
+  <a href="https://pepy.tech/project/penshot"><img src="https://img.shields.io/pepy/dt/penshot?style=flat-square&color=blue" alt="PyPI Downloads"></a>
+  <a href="https://hub.docker.com/r/neotems/penshot"><img src="https://img.shields.io/docker/pulls/neotems/penshot?style=flat-square&logo=docker&logoColor=white" alt="Docker Pulls"></a>
+  <a href="https://github.com/neopen/story-shot-agent"><img src="https://img.shields.io/github/stars/neopen/story-shot-agent?style=flat-square&logo=github" alt="GitHub Stars"></a>
+  <a href="./LICENSE"><img src="https://img.shields.io/badge/License-MIT-green.svg?style=flat-square" alt="License"></a>
+</p>
+  
+  <p align="center">
+    <a href="./README_CN.md">中文</a> •
+    <a href="https://shot.helpenx.com">WebSite</a> •
+    <a href="https://pengline.cn/2026/02/7e6cd67dd5ee45248f2276ac145555f5/">Documentation</a> • 
+    <a href="https://pengline.cn/2026/02/b027d930c0b84ba6abd24bbef7d78afc/">MCP Service</a> •
+    <a href="https://pypi.org/project/penshot/">PyPI</a>
+  </p>
+</p>
 
-------
+---
 
-[中文](./README_CN.md) | English | [Documentation](https://pengline.cn/2026/02/7e6cd67dd5ee45248f2276ac145555f5/) | [PyPI](https://pypi.org/project/penshot/)  | [WebSite](https://shot.helpenx.com) |  [RAG Knowledge](https://pengline.cn/2026/04/1e7f1f2a5a184427b4711cc7c1903027/) · [MCP Service](https://pengline.cn/2026/02/b027d930c0b84ba6abd24bbef7d78afc/)
+> 🚀 **One-Click Conversion**: Any screenplay format (Film, Short Drama, Anime, Novel, etc.) → Shot-level descriptions → **Sora / Veo / Runway / Kling-ready prompts**
+> 
+> 🧠 **Continuity Guaranteed**: Multi-view references + RAG Knowledge + Multi-level memory + Chroma vector retrieval + Snapshotting + Multi-dimensional recall ensure character/scene/plot consistency across shots
+> 
+> 🔌 **Multi-Ecosystem Support**: Out-of-the-box support for **Python SDK, MCP Service, Function Calling, REST API, and LangGraph Nodes**
+> 
+> ⚡ **Get Started in 5 Minutes**: `pip install penshot` + 3 lines of code, or  `docker pull neotems/penshot`
 
+---
 
-[![Built with LangGraph](https://img.shields.io/badge/LangChain%20%7C%20LangGraph%20%7C%20LlamaIndex-1C3C3C.svg?style=flat-square&logo=langchain&logoColor=white)](https://langchain-ai.github.io/langgraph/) [![Supported LLMs](https://img.shields.io/badge/LLMs-OpenAI%20%7C%20DeepSeek%20%7C%20Qwen-4E6BFF.svg?style=flat-square)](https://github.com/neopen/story-shot-agent) [![Redis](https://img.shields.io/badge/Redis-DC382D.svg?style=flat-square&logo=redis&logoColor=white)](https://redis.io/) [![Python Version](https://img.shields.io/badge/python-3.10+-3776AB.svg?style=flat-square&logo=python&logoColor=white)](https://www.python.org/) [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg?style=flat-square)](LICENSE)
+## 💡 Why PenShot?
 
-[![PyPI Version](https://img.shields.io/pypi/v/penshot.svg?style=flat-square&logo=pypi&logoColor=white)](https://pypi.org/project/penshot/) [![Docker Pulls](https://img.shields.io/docker/pulls/neotems/penshot?style=flat-square&logo=docker&logoColor=white)](https://hub.docker.com/r/neotems/penshot) [![PyPI Downloads](https://img.shields.io/pepy/dt/penshot?style=flat-square&color=blue)](https://pepy.tech/project/penshot) [![GitHub Stars](https://img.shields.io/github/stars/neopen/story-shot-agent?style=flat-square&logo=github)](https://github.com/neopen/story-shot-agent)
+A multi-agent collaborative screenplay storyboarding system built on **LangChain** and **LangGraph**. It automatically parses long scripts, segments them into optimal AI text-to-video prompt fragments, and enforces visual/narrative consistency using Chroma vector retrieval and multi-level memory.
 
+| Pain Point | PenShot Solution |
+| :--- | :--- |
+| **Scripts too long for AI video models** | Smart chunking + precise duration planning tailored for model constraints |
+| **Character outfits/scenes jump out of context** | Multi-level memory + Chroma vector retrieval auto-maintains continuity |
+| **Time-consuming manual prompt engineering** | Auto-generates bilingual descriptions + negative prompts + audio cues |
+| **Complex multi-model setup** | One codebase supporting OpenAI, Qwen, DeepSeek, Ollama & more |
 
+---
 
-------
+## 🌟 Core Features
 
-A multi-agent collaborative screenplay storyboarding system that splits scripts in various formats into script units optimized for AI text-to-video generation durations. It outputs high-quality storyboard fragment descriptions while ensuring narrative continuity. Built on LangChain and LangGraph, the system leverages LLMs to parse any script format into "Text-to-Video" prompt fragments compatible with mainstream AI video models. It supports task pool priority queuing, multi-level memory management, and Chroma vector retrieval.
-
-> **One-Click Conversion**: Any screenplay format → Shot-level descriptions → Sora/Veo/Runway/Kling-ready prompts  
-> **Continuity Guaranteed**: Multi-level memory + vector retrieval ensures character/scene/plot consistency across shots  
-> **Get Started in 5 Minutes**: `pip install penshot` + 3 lines of code
-
-
-**From Story to Shot** - Transform your scripts into AI-powered storyboards.
-
-> Named "penshot" on PyPI - because every story starts with a pen.
+- 🎯 **Intelligent Script Parsing:** Auto-identifies scenes, dialogue, and action cues; supports long-text chunking.
+- ⏱️ **Precise Temporal Planning:** Segments content at the shot level, allocating optimal durations for AI video generation.
+- 🛡️ **Continuity Guard:** Task pool priority queuing + short/mid/long-term memory Ensures consistency in character states, props, and plot across adjacent shots.
+- 🎨 **High-Quality Prompt Output:** Generates detailed bilingual (ZH/EN) visual descriptions, negative prompts, and audio prompts.
+- 🔌 **Multi-Protocol & Agent Integration:** Supports Python SDK, REST API, LangGraph nodes, A2A collaboration, and standard **MCP Service**.
 
 
 
 ---
 
-## Why PenShot?
+## 🏛️ System Architecture & Workflow
 
-| Pain Point                                              | PenShot Solution                                             |
-| ------------------------------------------------------- | ------------------------------------------------------------ |
-| Scripts too long for AI video models                    | Smart chunking + precise duration planning for model-friendly fragments |
-| Character outfit changes / scene jumps break continuity | Multi-level memory + Chroma vector retrieval auto-maintains context |
-| Manual prompt engineering is time-consuming             | Auto-generates bilingual visual descriptions + negative prompts + audio cues |
-| Complex multi-model adaptation                          | One codebase, supports OpenAI/Qwen/DeepSeek/Ollama & more    |
+<p align="center">
+  <img src="./assets/imgs/penshot-uml.webp" alt="PenShot Workflow" width="100%">
+</p>
 
+<details>
+<summary>🔍 <strong>Click to view detailed UML Class Architecture</strong></summary>
 
+<p align="center">
+  <img src="./assets/imgs/penshot.webp" alt="PenShot UML Architecture" width="100%">
+</p>
 
+</details>
 
----
-
-## Core Features
-
-| Feature | Description |
-|---|---|
-| Intelligent Script Parsing | Automatically identifies scenes, dialogue, and action cues; understands narrative structure; supports long-text chunking. |
-| Precise Temporal Planning | Intelligently segments content at the shot level, allocating optimal durations that strictly comply with AI video model constraints. |
-| Continuity Guard | Leverages task pool priority queuing, multi-level memory (short/mid/long-term), and Chroma vector retrieval to ensure high consistency in character states, scenes, and plot across adjacent shots. |
-| High-Quality Prompt Output | Generates detailed bilingual (Chinese/English) visual descriptions, negative prompts, and audio prompts, ready for immediate use. |
-| Multi-Model Compatibility | Supports OpenAI, Qwen, DeepSeek, Ollama, and other major LLM providers with plug-and-play switching. |
-| Multi-Protocol Integration | Provides Python SDK, REST API, LangGraph nodes, A2A collaboration protocol, and standard MCP interfaces. |
-| Robustness & Traceability | Built-in auto-retry and error fallback mechanisms. Every storyboard fragment is bidirectionally traceable to its original script location. |
-
-
-
----
-
-## System Architecture & Workflow
-
-![penshot-Roadmap](./assets/imgs/penshot-Roadmap.webp)
-
-**Architectural UML:**
-
-![penshot](./assets/imgs/penshot.webp)
-
-This system is a typical Natural Language Processing (NLP) application that achieves end-to-end storyboard transcoding through multi-agent collaboration and memory mechanisms. For detailed architectural design, memory pool implementation, and continuity assurance, please refer to: [Architecture Design & Implementation](https://pengline.cn/2026/02/7e6cd67dd5ee45248f2276ac145555f5/)
+> 💡 For in-depth architectural design, memory management, and continuity algorithms, please refer to our [Architecture Documentation](https://pengline.cn/2026/02/7e6cd67dd5ee45248f2276ac145555f5/).
 
 
 
@@ -166,10 +182,139 @@ python -m penshot.mcp_server --max-concurrent 5 --queue-size 500
 Clients can call the `breakdown_script` and `get_task_result` tools to seamlessly integrate with MCP-compatible IDEs or agent frameworks. Full example: [mcp_client.py](https://github.com/neopen/story-shot-agent/blob/main/examples/mcp_client.py)
 
 
+<details>
+<summary>🔍 <strong>Click to view detailed Output Data Structure</strong></summary>
+
+
+The system returns standardized JSON containing video prompts, negative prompts, duration estimates, style parameters, and accompanying audio prompts:
+
+```json
+{
+  "fragments": [
+    {
+      "fragment_id": "frag_001",
+      "prompt": "wide shot, late night 11 PM, dim city apartment living room, heavy rain outside window, rain muffled by glass, Lin Ran wrapped in gray worn wool blanket curled on gray sofa, TV playing silent black-and-white old movie, light and shadows flickering on wall, half-drunk cold tea on coffee table with condensation, brown old photo album with worn leather cover and faded photos, black phone with dark screen on corner of table, Fujifilm ETERNA grading, natural overcast lighting, 35mm lens, static camera\n\n全景镜头：深夜11点，昏暗的城市公寓客厅，窗外大雨滂沱，雨声被玻璃隔绝，林然裹着灰色旧羊毛毯蜷在灰色沙发上，电视静音播放黑白老电影，光影在墙上晃动，茶几上半杯凉茶凝出水雾，旁边摊开一本棕色旧相册，封面皮革磨损，内页照片褪色，手机黑色屏幕暗着放在茶几一角，富士ETERNA色调，阴天自然光，35mm镜头，静态镜头",
+      "negative_prompt": "bright lighting, sunny, dry room, modern decor, colorful, cartoon style, blurry details, wrong blanket color, wrong phone color",
+      "main_character": "",
+      "duration": 4.63,
+      "model": "runway_gen2",
+      "style": "cinematic realism, Fujifilm ETERNA, dim interior",
+      "audio": {
+        "audio_id": "audio_001",
+        "prompt": "heavy rain against window, muffled thunder, distant city hum, silence of TV static, occasional creak of old sofa, condensation drip\n\n窗外大雨滂沱，雷声低沉，远处城市嗡鸣，电视静音静电声，旧沙发偶尔吱嘎，水雾凝结滴落",
+        "negative_prompt": "noisy, low quality, distorted, robotic, bad audio",
+        "model_type": "AudioLDM_3",
+        "voice_type": "narration",
+        "audio_style": "cinematic",
+        "voice_character": "",
+        "voice_description": "deep, resonant, calm, slightly melancholic",
+        "speed": 1,
+        "pitch_shift": 0,
+        "emotion": "melancholic",
+        "stability": 0.7,
+        "duration_seconds": 4.63,
+        "sound_attributes": {
+          "intensity": 0.8,
+          "reverb": 0.3
+        },
+        "format": "wav",
+        "sample_rate": 24000,
+        "seed": 751512420,
+        "scene_context": "late night, dim apartment living room, heavy rain outside, silent TV, old photo album, condensation on glass",
+        "previous_audio_id": null
+      }
+    },
+    {
+      "fragment_id": "frag_002",
+      "prompt": "medium shot, cinematic lighting, heavy rain outside window, Lin Ran wrapped in gray worn wool blanket, curled up on sofa, phone screen lights up showing 'Unknown Number', staring at screen for three seconds, finger hovering over answer button, throat moving slightly, finally pressing answer button, bringing phone to ear, tense atmosphere, Fujifilm ETERNA grading, natural overcast, 35mm lens\n\n中景镜头：窗外大雨，林然裹着灰色旧羊毛毯蜷在沙发上，手机屏幕亮起显示'未知号码'，盯着屏幕看了三秒，指尖悬停在接听键上方，喉头轻轻滚动，终于按下接听，将手机贴到耳边，紧张氛围，富士ETERNA色调，阴天自然光，35mm镜头",
+      "negative_prompt": "blurry screen, wrong blanket color, smiling, bright lighting, cartoon style",
+      "main_character": "",
+      "duration": 2,
+      "model": "runway_gen2",
+      "style": "cinematic realism, Fujifilm ETERNA",
+      "requires_special_attention": false,
+      "audio": {
+        "audio_id": "audio_002",
+        "prompt": "continuous heavy rain outside window, phone vibrating, brief silence, soft breathing, rain pattering on glass\n\n窗外持续的大雨声，手机震动声，短暂沉默，轻柔的呼吸声，雨点打在玻璃上的声音",
+        "negative_prompt": "noisy, low quality, distorted, robotic, bad audio",
+        "model_type": "AudioLDM_3",
+        "voice_type": "narration",
+        "audio_style": "cinematic",
+        "voice_character": "Lin Ran",
+        "voice_description": "soft female voice, slightly trembling, tense",
+        "speed": 1,
+        "pitch_shift": 0,
+        "emotion": "tense",
+        "stability": 0.7,
+        "duration_seconds": 2,
+        "sound_attributes": {
+          "intensity": 0.8,
+          "reverb": 0.3
+        },
+        "format": "wav",
+        "sample_rate": 24000,
+        "seed": 751512420,
+        "scene_context": "Lin Ran in dark living room, heavy rain outside, phone vibrating with unknown caller",
+        "previous_audio_id": "audio_001"
+      }
+    },
+    {
+      "fragment_id": "frag_003",
+      "prompt": "extreme close-up, cinematic lighting, dim apartment, Lin Ran pressing black smartphone to ear, rain against window, tense atmosphere, shallow depth of field, Fujifilm ETERNA grading, natural overcast, 35mm lens\n\n极端特写镜头：林然将黑色手机贴紧耳边，窗外大雨，紧张氛围，浅景深，富士ETERNA色调，阴天自然光，35mm镜头",
+      "negative_prompt": "blurry phone, wrong phone color, smiling, bright lighting, cartoon style",
+      "main_character": "",
+      "duration": 3,
+      "model": "runway_gen2",
+      "style": "cinematic realism, Fujifilm ETERNA",
+      "requires_special_attention": false,
+      "audio": {
+        "audio_id": "audio_003",
+        "prompt": "continuous heavy rain, faint static from phone, low male voice whispering 'It's me', tense silence\n\n持续的大雨声，手机微弱的静电声，低沉男声低语'是我'，紧张的沉默",
+        "negative_prompt": "noisy, low quality, distorted, robotic, bad audio",
+        "model_type": "AudioLDM_3",
+        "voice_type": "character_dialogue",
+        "audio_style": "cinematic",
+        "voice_character": "陈默",
+        "voice_description": "low, husky male voice, tense and mysterious",
+        "speed": 1,
+        "pitch_shift": -2,
+        "emotion": "tense",
+        "stability": 0.7,
+        "duration_seconds": 3,
+        "sound_attributes": {
+          "intensity": 0.8,
+          "reverb": 0.3
+        },
+        "format": "wav",
+        "sample_rate": 24000,
+        "seed": 751512420,
+        "scene_context": "close-up of Lin Ran holding phone to ear in dim apartment, heavy rain outside",
+        "previous_audio_id": "audio_002"
+      }
+    }
+  ]
+}
+```
+
+</details>
+
 
 ------
 
 ## Docker Quick Start
+```bash
+docker run -d \
+  --name penshot \
+  -p 8000:8000 \
+  -e PENSHOT_LLM__DEFAULT__BASE_URL="https://api.deepseek.com" \
+  -e PENSHOT_LLM__DEFAULT__API_KEY="sk-xxxxxxxxxxxxxxxxxxxxxxxxxxx" \
+  -e PENSHOT_LLM__DEFAULT__MODEL_NAME="deepseek-v4-flash" \
+  -e PENSHOT_EMBED__DEFAULT__BASE_URL="https://api.openai.com/v1" \
+  -e PENSHOT_EMBED__DEFAULT__API_KEY="sk-xxxxxxxxxxxxxxxxxxxxxxxxxxx" \
+  -e PENSHOT_EMBED__DEFAULT__MODEL_NAME="text-embedding-v4" \
+  -e PENSHOT_REDIS_URL="redis://:@host.docker.internal:6379/0" \
+  neotems/penshot:latest
+```
 
 ### 1. Download  Config
 
@@ -187,54 +332,6 @@ Edit the `.env` file to configure the required LLM and Embedding parameters：`v
 ### 3. Start Docker
 
 `docker compose up -d`
-
----
-
-### `docker run` Start
-
-> password= 123456，`host.docker.internal`  is the host machine IP of the mapping.
-
-```bash
-docker run -d \
-  --name penshot \
-  -p 8000:8000 \
-  -e PENSHOT_LLM__DEFAULT__BASE_URL="https://api.deepseek.com" \
-  -e PENSHOT_LLM__DEFAULT__API_KEY="sk-xxxxxxxxxxxxxxxxxxxxxxxxxxx" \
-  -e PENSHOT_LLM__DEFAULT__MODEL_NAME="deepseek-v4-flash" \
-  -e PENSHOT_EMBED__DEFAULT__BASE_URL="https://api.openai.com/v1" \
-  -e PENSHOT_EMBED__DEFAULT__API_KEY="sk-xxxxxxxxxxxxxxxxxxxxxxxxxxx" \
-  -e PENSHOT_EMBED__DEFAULT__MODEL_NAME="text-embedding-v4" \
-  -e PENSHOT_REDIS_URL="redis://:@host.docker.internal:6379/0" \
-  neotems/penshot:latest
-```
-
-
-------
-
-## Output Data Structure
-
-The system returns standardized JSON containing video prompts, negative prompts, duration estimates, style parameters, and accompanying audio prompts:
-
-```json
-{
-  "fragments": [
-    {
-      "fragment_id": "frag_001",
-      "prompt": "Cinematic wide shot: midnight 11 PM in a compact urban apartment living room...",
-      "negative_prompt": "cartoon, anime, 3D render, bright lighting, text, watermark...",
-      "duration": 4.2,
-      "model": "runway_gen2",
-      "style": "cinematic 35mm film, moody realism, shallow depth of field...",
-      "audio_prompt": {
-        "audio_id": "audio_001",
-        "prompt": "Low-frequency rain ambience (intensity 0.95), distant muffled TV static...",
-        "model_type": "AudioLDM_3",
-        "audio_style": "cinematic"
-      }
-    }
-  ]
-}
-```
 
 
 
@@ -256,6 +353,10 @@ The system returns standardized JSON containing video prompts, negative prompts,
 ------
 
 ## Development Roadmap
+
+<p align="center">
+  <img src="./assets/imgs/penshot-roadmap.webp" alt="PenShot Workflow" width="100%">
+</p>
 
 ### Short-Term
 
