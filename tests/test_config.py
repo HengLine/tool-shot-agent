@@ -1,4 +1,9 @@
 """
+Copyright (c) 2025 HiPeng (NeoPen)
+Licensed under the story-shot-agent(penshot) Custom License.
+Certain entities are prohibited from using this software.
+See LICENSE file for details.
+
 @FileName: test_config.py
 @Description: 
 @Author: HiPeng
@@ -8,6 +13,11 @@
 import os
 
 """
+Copyright (c) 2025 HiPeng (NeoPen)
+Licensed under the story-shot-agent(penshot) Custom License.
+Certain entities are prohibited from using this software.
+See LICENSE file for details.
+
 @FileName: config.py
 @Description: 配置管理模块 - 严格遵循 env > yaml > default 优先级
 @Author: HiPeng

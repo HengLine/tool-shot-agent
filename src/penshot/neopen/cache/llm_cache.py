@@ -1,4 +1,9 @@
 """
+Copyright (c) 2025 HiPeng (NeoPen)
+Licensed under the story-shot-agent(penshot) Custom License.
+Certain entities are prohibited from using this software.
+See LICENSE file for details.
+
 @FileName: llm_cache.py.py
 @Description: 带质量控制的多级缓存
 @Author: HiPeng

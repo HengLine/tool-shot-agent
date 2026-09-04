@@ -1,4 +1,9 @@
 """
+Copyright (c) 2025 HiPeng (NeoPen)
+Licensed under the story-shot-agent(penshot) Custom License.
+Certain entities are prohibited from using this software.
+See LICENSE file for details.
+
 @FileName: base_models.py
 @Description: 基本模型
 @Author: HiPeng

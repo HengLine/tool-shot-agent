@@ -1,4 +1,9 @@
 """
+Copyright (c) 2025 HiPeng (NeoPen)
+Licensed under the story-shot-agent(penshot) Custom License.
+Certain entities are prohibited from using this software.
+See LICENSE file for details.
+
 @FileName: direct_usage.py
 @Description: 作为Python库直接使用
 @Author: HiPeng

@@ -1,4 +1,9 @@
 """
+Copyright (c) 2025 HiPeng (NeoPen)
+Licensed under the story-shot-agent(penshot) Custom License.
+Certain entities are prohibited from using this software.
+See LICENSE file for details.
+
 @FileName: workflow_decision.py
 @Description: 决策函数类 - 控制工作流分支逻辑
 @Author: HiPeng

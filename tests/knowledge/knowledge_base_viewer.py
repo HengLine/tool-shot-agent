@@ -1,4 +1,9 @@
 """
+Copyright (c) 2025 HiPeng (NeoPen)
+Licensed under the story-shot-agent(penshot) Custom License.
+Certain entities are prohibited from using this software.
+See LICENSE file for details.
+
 @FileName: knowledge_base_viewer.py
 @Description: 知识库可视化查看工具 - 支持提示词模板库和剧本知识库
 @Author: HiPeng

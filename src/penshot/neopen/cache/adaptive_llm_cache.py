@@ -1,4 +1,9 @@
 """
+Copyright (c) 2025 HiPeng (NeoPen)
+Licensed under the story-shot-agent(penshot) Custom License.
+Certain entities are prohibited from using this software.
+See LICENSE file for details.
+
 @FileName: adaptive_llm_cache.py
 @Description: 短期缓存 + 人工反馈清除
 @Author: HiPeng

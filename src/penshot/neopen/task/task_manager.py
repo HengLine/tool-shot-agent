@@ -1,4 +1,9 @@
 """
+Copyright (c) 2025 HiPeng (NeoPen)
+Licensed under the story-shot-agent(penshot) Custom License.
+Certain entities are prohibited from using this software.
+See LICENSE file for details.
+
 @FileName: task_manager.py
 @Description: TaskManager - 任务管理协调层，对外统一入口
     协调 TaskLifecycleService、TaskRepository 和 WorkflowRegistry

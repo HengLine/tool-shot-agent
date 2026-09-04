@@ -1,4 +1,9 @@
 """
+Copyright (c) 2025 HiPeng (NeoPen)
+Licensed under the story-shot-agent(penshot) Custom License.
+Certain entities are prohibited from using this software.
+See LICENSE file for details.
+
 @FileName: download_reranker.py
 @Description: 自动下载 BAAI/bge-reranker-large 模型
             需要安装 pip install sentence-transformers  或 pip install modelscope

@@ -1,4 +1,9 @@
 """
+Copyright (c) 2025 HiPeng (NeoPen)
+Licensed under the story-shot-agent(penshot) Custom License.
+Certain entities are prohibited from using this software.
+See LICENSE file for details.
+
 @FileName: medium_term_memory.py
 @Description: 中期记忆 - 基于LangChain的摘要记忆
 @Author: HiPeng

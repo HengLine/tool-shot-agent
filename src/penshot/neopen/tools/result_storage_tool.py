@@ -1,4 +1,9 @@
 """
+Copyright (c) 2025 HiPeng (NeoPen)
+Licensed under the story-shot-agent(penshot) Custom License.
+Certain entities are prohibited from using this software.
+See LICENSE file for details.
+
 @FileName: result_storage_tool.py
 @Description: 结果存储工具模块，提供智能体结果的保存、加载和管理功能
 @Author: HiPeng

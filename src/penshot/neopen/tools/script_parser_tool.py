@@ -1,4 +1,9 @@
 """
+Copyright (c) 2025 HiPeng (NeoPen)
+Licensed under the story-shot-agent(penshot) Custom License.
+Certain entities are prohibited from using this software.
+See LICENSE file for details.
+
 @FileName: script_parser_tool.py
 @Description: 剧本语法解析器模块 - 支持中文剧本
 @Author: HiPeng
