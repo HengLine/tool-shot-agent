@@ -1,4 +1,9 @@
 """
+Copyright (c) 2025 HiPeng (NeoPen)
+Licensed under the story-shot-agent(penshot) Custom License.
+Certain entities are prohibited from using this software.
+See LICENSE file for details.
+
 @FileName: http_server.py
 @Description: Penshot HTTP 服务 - 可直接在命令行启动
 @Author: HiPeng

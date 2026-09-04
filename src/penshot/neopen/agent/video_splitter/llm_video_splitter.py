@@ -1,4 +1,9 @@
 """
+Copyright (c) 2025 HiPeng (NeoPen)
+Licensed under the story-shot-agent(penshot) Custom License.
+Certain entities are prohibited from using this software.
+See LICENSE file for details.
+
 @FileName: llm_video_splitter.py
 @Description: 基于LLM的视频智能分割器 - 从ParsedScript获取全局信息
 @Author: HiPeng

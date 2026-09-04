@@ -1,4 +1,9 @@
 """
+Copyright (c) 2025 HiPeng (NeoPen)
+Licensed under the story-shot-agent(penshot) Custom License.
+Certain entities are prohibited from using this software.
+See LICENSE file for details.
+
 @FileName: workflow_checkpointer.py
 @Description: 工作流检查点管理器 - 简化版（仅同步）
 @Author: HiPeng

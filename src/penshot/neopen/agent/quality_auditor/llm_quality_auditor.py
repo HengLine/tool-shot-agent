@@ -1,4 +1,9 @@
 """
+Copyright (c) 2025 HiPeng (NeoPen)
+Licensed under the story-shot-agent(penshot) Custom License.
+Certain entities are prohibited from using this software.
+See LICENSE file for details.
+
 @FileName: llm_quality_auditor.py
 @Description: LLM深度审查器 - 只负责LLM审查逻辑
 @Author: HiPeng

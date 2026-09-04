@@ -1,4 +1,9 @@
 """
+Copyright (c) 2025 HiPeng (NeoPen)
+Licensed under the story-shot-agent(penshot) Custom License.
+Certain entities are prohibited from using this software.
+See LICENSE file for details.
+
 @FileName: task_lifecycle_service.py
 @Description: 任务生命周期服务 - 负责任务状态机管理和生命周期控制
 @Author: HiPeng

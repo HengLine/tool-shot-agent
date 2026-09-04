@@ -1,10 +1,16 @@
 """
+Copyright (c) 2025 HiPeng (NeoPen)
+Licensed under the story-shot-agent(penshot) Custom License.
+Certain entities are prohibited from using this software.
+See LICENSE file for details.
+
 @FileName: __init__.py
 @Description: 
 @Author: HiPeng
 @Time: 2026/2/12 15:19
 """
-__version__ = "0.3.6"
+
+__version__ = "0.3.8"
 __author__ = "HiPeng"
 
 __all__ = [

@@ -1,4 +1,9 @@
 """
+Copyright (c) 2025 HiPeng (NeoPen)
+Licensed under the story-shot-agent(penshot) Custom License.
+Certain entities are prohibited from using this software.
+See LICENSE file for details.
+
 @FileName: workflow_output.py
 @Description: 工作流输出封装 - 异步保存各类报告，不阻塞主流程
 @Author: HiPeng

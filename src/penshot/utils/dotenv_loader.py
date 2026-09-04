@@ -1,4 +1,9 @@
 """
+Copyright (c) 2025 HiPeng (NeoPen)
+Licensed under the story-shot-agent(penshot) Custom License.
+Certain entities are prohibited from using this software.
+See LICENSE file for details.
+
 @FileName: dotenv_loader.py
 @Description: 智能 .env 加载器 - 按优先级查找并加载配置
 @Author: HiPeng

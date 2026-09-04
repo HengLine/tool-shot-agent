@@ -1,4 +1,9 @@
 """
+Copyright (c) 2025 HiPeng (NeoPen)
+Licensed under the story-shot-agent(penshot) Custom License.
+Certain entities are prohibited from using this software.
+See LICENSE file for details.
+
 @FileName: short_term_memory.py
 @Description: 短期记忆 - 基于LangChain的缓冲记忆，支持剧本ID数据隔离
 @Author: HiPeng

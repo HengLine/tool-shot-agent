@@ -1,4 +1,9 @@
 """
+Copyright (c) 2025 HiPeng (NeoPen)
+Licensed under the story-shot-agent(penshot) Custom License.
+Certain entities are prohibited from using this software.
+See LICENSE file for details.
+
 @FileName: workflow_logger.py
 @Description: 统一日志格式工具 - 定义工作流的结构化日志规范
 @Author: HiPeng

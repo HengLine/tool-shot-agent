@@ -1,5 +1,10 @@
 
 """
+Copyright (c) 2025 HiPeng (NeoPen)
+Licensed under the story-shot-agent(penshot) Custom License.
+Certain entities are prohibited from using this software.
+See LICENSE file for details.
+
 @FileName: logger.py
 @Description: 自定义日志模块，支持按天创建日志文件、日志文件大小限制、控制台彩色输出等功能
             自定义日志模块，按天创建日志文件，最大10MB

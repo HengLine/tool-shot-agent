@@ -1,4 +1,9 @@
 """
+Copyright (c) 2025 HiPeng (NeoPen)
+Licensed under the story-shot-agent(penshot) Custom License.
+Certain entities are prohibited from using this software.
+See LICENSE file for details.
+
 @FileName: script_parser_agent.py
 @Description: LLM 剧本解析基类，包含复杂度评估和路由决策逻辑
 @Author: HiPeng
