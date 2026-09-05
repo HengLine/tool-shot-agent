@@ -1,8 +1,7 @@
 """
 Copyright (c) 2025 HiPeng (NeoPen)
-Licensed under the story-shot-agent(penshot) Custom License.
-Certain entities are prohibited from using this software.
-See LICENSE file for details.
+Licensed under the mit license.
+see license File For Details.
 
 @FileName: workflow_models.py
 @Description: 工作流模型定义文件，包含工作流状态和条件的枚举类

@@ -1,8 +1,7 @@
 """
 Copyright (c) 2025 HiPeng (NeoPen)
-Licensed under the story-shot-agent(penshot) Custom License.
-Certain entities are prohibited from using this software.
-See LICENSE file for details.
+Licensed under the mit license.
+see license File For Details.
 
 @FileName: continuity_guardian_checker.py
 @Description: 连续性检查器 - 实现连续性检测逻辑

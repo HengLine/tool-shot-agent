@@ -1,8 +1,7 @@
 """
 Copyright (c) 2025 HiPeng (NeoPen)
-Licensed under the story-shot-agent(penshot) Custom License.
-Certain entities are prohibited from using this software.
-See LICENSE file for details.
+Licensed under the mit license.
+see license File For Details.
 
 @FileName: langchain_memory_tool.py
 @Description: 使用LangChain的VectorStoreRetrieverMemory实现时序规划智能体的状态记忆功能

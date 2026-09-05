@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "penshot": {
+      "command": "python",
+      "args": ["-m", "penshot.mcp_server", "--max-concurrent", "5"]
+    }
+  }
+}

@@ -1,10 +1,10 @@
 <p align="center">
-  <h1 align="center">🎬 PenShot: Script → Storyboard → Prompt</h1>
+  <h1 align="center">🎬 剧本分镜智能体 (PenShot)</h1>
   <p align="center">
-    <strong>A multi-agent collaborative screenplay storyboarding system with narrative continuity.</strong>
+    <strong>基于 LangChain + LangGraph 多智能体协作的剧本转分镜系统，确保叙事连续性与镜头级提示词生成。</strong>
   </p>
   
-<p align="center">
+  <p align="center">
   <!-- 第一行：技术栈与生态依赖 -->
   <a href="https://langchain-ai.github.io/langgraph/"><img src="https://img.shields.io/badge/LangGraph-1C3C3C.svg?style=flat-square&logo=langchain&logoColor=white" alt="LangGraph"></a>
   <a href="https://www.llamaindex.ai/"><img src="https://img.shields.io/badge/LlamaIndex-000000.svg?style=flat-square&logo=llamaindex&logoColor=white" alt="LlamaIndex"></a>
@@ -21,132 +21,188 @@
   <a href="./LICENSE"><img src="https://img.shields.io/badge/License-MIT-green.svg?style=flat-square" alt="License"></a>
 </p>
   
-  <p align="center">
-    <a href="./README_CN.md">中文</a> •
-    <a href="https://shot.helpenx.com">WebSite</a> •
-    <a href="https://pengline.cn/2026/02/7e6cd67dd5ee45248f2276ac145555f5/">Documentation</a> • 
-    <a href="https://pengline.cn/2026/02/b027d930c0b84ba6abd24bbef7d78afc/">MCP Service</a> •
+<p align="center">
+    <a href="./README.md">English</a> •
+    <a href="https://shot.helpenx.com/">官网演示</a> •
+    <a href="https://pengline.cn/2026/02/7e6cd67dd5ee45248f2276ac145555f5/">官方文档</a> •
+    <a href="https://pengline.cn/2026/02/df16e7d36e5d41d2ad9d7934b28f94e4/">集成指南</a> •
+    <a href="https://pengline.cn/2026/02/b027d930c0b84ba6abd24bbef7d78afc/">MCP 服务</a> •
     <a href="https://pypi.org/project/penshot/">PyPI</a>
-  </p>
 </p>
 
 ---
+> 🚀 **一键转换**：支持任意格式剧本（电影、短剧、动漫、小说等） → 镜头级描述 → **Sora / Veo / Runway / 可灵 Ready Prompt**  
+> 🧠 **连续性保障**：三视图 + RAG 知识库+ 三级记忆 + Chroma 向量检索 + 快照机制 + 多维召回，确保角色/场景/剧情跨片段一致  
+> 🔌 **多端生态支持**：开箱即用 **Python SDK、MCP 服务、Function Calling、REST API 及 LangGraph 节点**  
+> ⚡ **5 分钟上手**：`pip install penshot` + 3 行代码集成。或者 `docker pull neotems/penshot` 启动服务
 
-> 🚀 **One-Click Conversion**: Any screenplay format (Film, Short Drama, Anime, Novel, etc.) → Shot-level descriptions → **Sora / Veo / Runway / Kling-ready prompts**
-> 
-> 🧠 **Continuity Guaranteed**: Multi-view references + RAG Knowledge + Multi-level memory + Chroma vector retrieval + Snapshotting + Multi-dimensional recall ensure character/scene/plot consistency across shots
-> 
-> 🔌 **Multi-Ecosystem Support**: Out-of-the-box support for **Python SDK, MCP Service, Function Calling, REST API, and LangGraph Nodes**
-> 
-> ⚡ **Get Started in 5 Minutes**: `pip install penshot` + 3 lines of code, or  `docker pull neotems/penshot`
-
----
-
-## 💡 Why PenShot?
-
-A multi-agent collaborative screenplay storyboarding system built on **LangChain** and **LangGraph**. It automatically parses long scripts, segments them into optimal AI text-to-video prompt fragments, and enforces visual/narrative consistency using Chroma vector retrieval and multi-level memory.
-
-| Pain Point | PenShot Solution |
-| :--- | :--- |
-| **Scripts too long for AI video models** | Smart chunking + precise duration planning tailored for model constraints |
-| **Character outfits/scenes jump out of context** | Multi-level memory + Chroma vector retrieval auto-maintains continuity |
-| **Time-consuming manual prompt engineering** | Auto-generates bilingual descriptions + negative prompts + audio cues |
-| **Complex multi-model setup** | One codebase supporting OpenAI, Qwen, DeepSeek, Ollama & more |
-
----
-
-## 🌟 Core Features
-
-- 🎯 **Intelligent Script Parsing:** Auto-identifies scenes, dialogue, and action cues; supports long-text chunking.
-- ⏱️ **Precise Temporal Planning:** Segments content at the shot level, allocating optimal durations for AI video generation.
-- 🛡️ **Continuity Guard:** Task pool priority queuing + short/mid/long-term memory Ensures consistency in character states, props, and plot across adjacent shots.
-- 🎨 **High-Quality Prompt Output:** Generates detailed bilingual (ZH/EN) visual descriptions, negative prompts, and audio prompts.
-- 🔌 **Multi-Protocol & Agent Integration:** Supports Python SDK, REST API, LangGraph nodes, A2A collaboration, and standard **MCP Service**.
+------
 
 
+## 为什么选择 PenShot？
 
----
-
-## 🏛️ System Architecture & Workflow
-
-<p align="center">
-  <img src="./assets/imgs/penshot-uml.webp" alt="PenShot Workflow" width="100%">
-</p>
-
-<details>
-<summary>🔍 <strong>Click to view detailed UML Class Architecture</strong></summary>
-
-<p align="center">
-  <img src="./assets/imgs/penshot.webp" alt="PenShot UML Architecture" width="100%">
-</p>
-
-</details>
-
-> 💡 For in-depth architectural design, memory management, and continuity algorithms, please refer to our [Architecture Documentation](https://pengline.cn/2026/02/7e6cd67dd5ee45248f2276ac145555f5/).
+| 痛点                          | PenShot 解决方案                                      |
+| ----------------------------- | ----------------------------------------------------- |
+| 剧本太长，AI 视频模型吃不下   | 智能分段 + 时长精准规划，输出模型友好型片段           |
+| 角色换装/场景跳变，视频不连贯 | 多级记忆池 + Chroma 向量检索，自动维持上下文一致性    |
+| 手动写 Prompt 费时费力        | 自动生成中英双语视觉描述 + 负面词 + 音频提示词        |
+| 多模型适配复杂                | 一套代码，支持 OpenAI/Qwen/DeepSeek/Ollama 等主流 LLM |
 
 
 
 ------
 
-## Quick Start
+## 核心功能
 
-### 1. Environment Setup
+| 特性             | 说明                                                         |
+| ---------------- | ------------------------------------------------------------ |
+| 智能剧本解析     | 自动识别场景、对话和动作指令，理解故事结构，支持长文本分段处理 |
+| 精准时序规划     | 按镜头粒度智能切分内容，分配合理时长，严格适配 AI 视频生成模型的时长限制 |
+| 连续性守护       | 基于任务池优先级排队、多层级记忆（短期/中期/长期）与 Chroma 向量检索，确保相邻分镜间角色状态、场景和情节高度一致 |
+| 高质量提示词输出 | 生成详细的中英双语画面描述、负面提示词及音频提示词，开箱即用 |
+| 多模型兼容       | 支持 OpenAI、Qwen、DeepSeek、Ollama 等主流 LLM 提供商，可插拔切换 |
+| 多协议集成       | 提供 Python SDK、REST API、LangGraph 节点、A2A 协作协议与 MCP 标准接口 |
+| 健壮性与可追溯   | 内置自动重试、错误降级机制，每个分镜片段均可双向追溯至原剧本位置 |
+
+
+
+------
+
+## 系统架构与创作流程
+
+![PenShot 创作流程](/assets/imgs/penshot-uml-cn.webp)
+
+
+<details>
+<summary>🔍 <strong>点击查看 《基础架构 UML 图》</strong></summary>
+
+<p align="center">
+  
+```mermaid
+flowchart TD
+    subgraph Input [输入层]
+        A1[客户端 / 上游智能体] --> A2[REST API / MCP / A2A]
+        A2 --> A3[任务管理器]
+    end
+
+    subgraph Core [LangGraph 多智能体核心工作流]
+        direction TB
+        
+        P1[剧本解析智能体] --> P2[分镜生成智能体]
+        P2 --> P3[视频分割智能体]
+        P3 --> P4[提示词转换智能体]
+        P4 --> P5[质量审计智能体]
+        P5 --> P6[连续性守护智能体]
+        P6 --> P7[辅助生成智能体<br/>三视图/背景图/关键帧]
+        
+        subgraph Control [控制节点]
+            C1[循环检查] --> C2[错误处理]
+            C2 --> C3[人工干预]
+            C3 --> C4[结果生成]
+        end
+        
+        P1 -.->|重试/修复| Control
+        P2 -.->|重试/修复| Control
+        P3 -.->|重试/修复| Control
+        P4 -.->|重试/修复| Control
+        P5 -.->|重试/修复| Control
+        P6 -.->|重试/修复| Control
+        Control -.->|路由决策| P1
+    end
+
+    subgraph Memory [记忆层]
+        M1[(短期记忆)]
+        M2[(中期记忆)]
+        M3[(长期记忆)]
+        M4[(向量数据库<br/>Chroma)]
+        
+        M1 <--> Core
+        M2 <--> Core
+        M3 <--> Core
+        M4 <--> Core
+    end
+
+    subgraph Output [输出层]
+        O1[Workflow Output Fixer<br/>片段序列修复] --> O2[结果格式化]
+        O2 --> O3[JSON / SDK / MCP / A2A]
+    end
+
+    subgraph Downstream [下游渲染]
+        D1[多模型适配器] --> D2[Sora/Veo/Runway/可灵/SVD]
+        D2 --> D3[FFmpeg 合成]
+        D3 --> D4[最终成片]
+    end
+
+    A3 --> P1
+    P7 --> O1
+    O3 --> D1
+```
+</p>
+
+</details>
+
+该系统为典型的自然语言处理（NLP）应用场景，通过多智能体协作与记忆机制实现端到端的分镜转码。详细架构设计、记忆池实现与一致性保障机制请参考：[《架构设计与实现》](https://pengline.cn/2026/02/7e6cd67dd5ee45248f2276ac145555f5/)
+
+
+
+------
+
+## 快速开始
+
+### 1. 依赖安装
 
 ```bash
-# Install via PyPI
+# 直接安装 PyPI 包
 pip install penshot
 ```
 
-> Note: `penshot` is the PyPI package name, while `story-shot-agent` is the GitHub repository name. Both refer to the same project.
-
-### 2. Configuration
+### 2. 环境配置
 
 ```bash
 cp .env.example .env
 ```
 
-Edit the `.env` file to configure the required LLM and Embedding parameters:
+编辑 `.env` 文件，配置必要的 LLM 与 Embedding 参数：
 
 ```properties
-########################## LLM Configuration #########################
-PENSHOT_LLM__DEFAULT__BASE_URL=https://api.openai.com/v1
+########################## LLM 模型配置 #########################
+PENSHOT_LLM__DEFAULT__BASE_URL=https://dashscope-intl.aliyuncs.com/api/v1
 PENSHOT_LLM__DEFAULT__API_KEY=sk-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-PENSHOT_LLM__DEFAULT__MODEL_NAME=gpt-4o
-PENSHOT_LLM__DEFAULT__TIMEOUT=30
+PENSHOT_LLM__DEFAULT__MODEL_NAME=qwen-plus
 
-########################## Embedding Model Configuration #########################
-PENSHOT_EMBED__DEFAULT__BASE_URL=https://api.openai.com/v1
+########################## 嵌入模型配置 #########################
+PENSHOT_EMBED__DEFAULT__BASE_URL=https://dashscope-intl.aliyuncs.com/api/v1
 PENSHOT_EMBED__DEFAULT__API_KEY=sk-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 PENSHOT_EMBED__DEFAULT__MODEL_NAME=text-embedding-v4
 
-########################## Redis Configuration ##########################
+########################## Redis 配置 ##########################
 PENSHOT_REDIS_URL=redis://:123456@localhost:6379/0
 ```
 
-### 3.Usage Methods
+### 3. 使用方式
 
-#### 1. Python SDK
+#### 1. Python SDK 调用
 
 ```python
 from penshot.api import create_penshot_agent
 
 agent = create_penshot_agent(max_concurrent=5)
 
-script = "Morning, a girl reading in a cafe, sunlight streaming through the window..."
+script = "早晨，一个女孩在咖啡馆读书，阳光透过窗户..."
 task_id = agent.breakdown_script_async(
     script,
-    callback=lambda r: print(f"Task {r.task_id} completed")
+    callback=lambda r: print(f"任务 {r.task_id} 已完成")
 )
 
 status = agent.get_task_status(task_id)
 result = await agent.wait_for_result_async(task_id)
 ```
 
-Full example: [direct_usage.py](https://github.com/neopen/story-shot-agent/blob/main/examples/direct_usage.py)
+完整示例：[direct_usage.py](https://github.com/neopen/story-shot-agent/blob/main/example/direct_usage.py)
 
-#### 2. FastAPI Web Application Integration
+#### 2. 嵌入 FastAPI Web 应用
 
-Integrate into existing systems via standard HTTP endpoints:
+可通过标准 HTTP 接口集成至现有业务系统：
 
 ```python
 from fastapi import FastAPI, HTTPException
@@ -161,32 +217,33 @@ async def generate(script_text: str):
     return {"task_id": task_id, "status": "PENDING"}
 ```
 
-Full example: [web_app.py](https://github.com/neopen/story-shot-agent/blob/main/examples/web_app.py)
+完整示例：[web_app.py](https://github.com/neopen/story-shot-agent/blob/main/example/web_app.py)
 
-#### 3. LangGraph Node Integration
+#### 3. LangGraph 节点集成
 
-Can be embedded as an independent node in LangChain/LangGraph workflows for end-to-end automation. Full example: [langgraph_integration.py](https://github.com/neopen/story-shot-agent/blob/main/examples/langgraph_integration.py)
+支持作为独立 Node 接入 LangChain/LangGraph 工作流，实现端到端自动化流水线。 完整示例：[langgraph_integration.py](https://github.com/neopen/story-shot-agent/blob/main/example/langgraph_integration.py)
 
-#### 4. A2A Protocol Collaboration
+#### 4. A2A 协议协作
 
-Supports context passing and task orchestration with upstream scriptwriting agents and downstream text-to-video/editing agents. Full example: [a2a_integration.py](https://github.com/neopen/story-shot-agent/blob/main/examples/a2a_integration.py)
+支持与上游剧本创作 Agent、下游文生视频/剪辑 Agent 进行上下文传递与任务编排。 完整示例：[a2a_integration.py](https://github.com/neopen/story-shot-agent/blob/main/example/a2a_integration.py)
 
-#### 5. MCP (Model Context Protocol) Support
+#### 5. MCP (Model Context Protocol) 支持
 
-Start the MCP Server:
+启动 MCP Server：
 
 ```bash
 python -m penshot.mcp_server --max-concurrent 5 --queue-size 500
 ```
 
-Clients can call the `breakdown_script` and `get_task_result` tools to seamlessly integrate with MCP-compatible IDEs or agent frameworks. Full example: [mcp_client.py](https://github.com/neopen/story-shot-agent/blob/main/examples/mcp_client.py)
+客户端调用工具 `breakdown_script` 与 `get_task_result` 即可无缝接入支持 MCP 的 IDE 或 Agent 框架。 完整示例：[mcp_client.py](https://github.com/neopen/story-shot-agent/blob/main/example/mcp_client.py)
+
 
 
 <details>
-<summary>🔍 <strong>Click to view detailed Output Data Structure</strong></summary>
+<summary>🔍 <strong>点击查看输出数据结构</strong></summary>
 
 
-The system returns standardized JSON containing video prompts, negative prompts, duration estimates, style parameters, and accompanying audio prompts:
+系统返回标准化的 JSON 格式，包含视频提示词、负面提示词、时长估算、风格参数及配套的音频提示词：
 
 ```json
 {
@@ -299,108 +356,135 @@ The system returns standardized JSON containing video prompts, negative prompts,
 </details>
 
 
+
+
 ------
 
-## Docker Quick Start
+## Docker 快速部署
+
+### 1. 下载配置文件
 ```bash
+# Docker Compose 配置文件
+wget https://raw.githubusercontent.com/neopen/story-shot-agent/main/docker-compose.yml
+# penshot 配置文件
+wget https://raw.githubusercontent.com/neopen/story-shot-agent/main/.env.example -O .env
+```
+
+### 2. 配置环境变量
+
+修改 `.env` 文件，填入你的 OpenAI API Key 及相关模型配置：`vim .env`
+
+### 3. 启动服务
+
+`docker compose up -d`
+
+
+
+
+---
+
+### `docker run` 命令启动
+
+如果不想下载 Compose 文件，只希望直接执行 `docker run` 命令启动容器，可以通过 `-e` 参数直接将配置注入容器内部。
+> 密码为 123456，`host.docker.internal` 表示自动映射的宿主机IP
+
+```bash
+############ Linux 版
 docker run -d \
   --name penshot \
   -p 8000:8000 \
   -e PENSHOT_LLM__DEFAULT__BASE_URL="https://api.deepseek.com" \
   -e PENSHOT_LLM__DEFAULT__API_KEY="sk-xxxxxxxxxxxxxxxxxxxxxxxxxxx" \
   -e PENSHOT_LLM__DEFAULT__MODEL_NAME="deepseek-v4-flash" \
-  -e PENSHOT_EMBED__DEFAULT__BASE_URL="https://api.openai.com/v1" \
+  -e PENSHOT_EMBED__DEFAULT__BASE_URL="https://dashscope-intl.aliyuncs.com/api/v1" \
   -e PENSHOT_EMBED__DEFAULT__API_KEY="sk-xxxxxxxxxxxxxxxxxxxxxxxxxxx" \
   -e PENSHOT_EMBED__DEFAULT__MODEL_NAME="text-embedding-v4" \
-  -e PENSHOT_REDIS_URL="redis://:@host.docker.internal:6379/0" \
-  neotems/penshot:latest
+  -e PENSHOT_REDIS_URL="redis://123456:@host.docker.internal:6379/0" \
+  ghcr.io/neopen/penshot:latest
+  
+############ Windows 版  
+docker run -d `
+  --name penshot `
+  -p 8000:8000 `
+  -e PENSHOT_LLM__DEFAULT__BASE_URL="https://api.deepseek.com" `
+  -e PENSHOT_LLM__DEFAULT__API_KEY="sk-xxxxxxxxxxxxxxxxxxxxxxxxxxx" `
+  -e PENSHOT_LLM__DEFAULT__MODEL_NAME="deepseek-v4-flash" `
+  -e PENSHOT_EMBED__DEFAULT__BASE_URL="https://dashscope-intl.aliyuncs.com/api/v1" `
+  -e PENSHOT_EMBED__DEFAULT__API_KEY="sk-xxxxxxxxxxxxxxxxxxxxxxxxxxx" `
+  -e PENSHOT_EMBED__DEFAULT__MODEL_NAME="text-embedding-v4" `
+  -e PENSHOT_REDIS_URL="redis://:@host.docker.internal:6379/0?protocol=2" `
+  neotems/penshot:latest  
 ```
-
-### 1. Download  Config
-
-```bash
-# Docker Compose Config
-wget https://raw.githubusercontent.com/neopen/story-shot-agent/main/docker-compose.yml
-# penshot Config
-wget https://raw.githubusercontent.com/neopen/story-shot-agent/main/.env.example -O .env
-```
-
-### 2. Configuration
-
-Edit the `.env` file to configure the required LLM and Embedding parameters：`vim .env`
-
-### 3. Start Docker
-
-`docker compose up -d`
 
 
 
 ------
 
-## System Notes & Considerations
+## 系统说明与注意事项
 
-| Category              | Description                                                  |
-| --------------------- | ------------------------------------------------------------ |
-| Network Dependency    | Requires stable access to external LLM APIs. Proxy or domestic mirrors are recommended. |
-| Long Text Processing  | For extremely long scripts, segmented input is advised. The system includes built-in context memory and RAG mechanisms. |
-| Generation Duration   | AI video models may output clips with ±10% duration variance, which is industry-standard. |
-| Multilingual Support  | Currently optimized for Chinese scripts. Support for other languages is under active iteration. |
-| Audio Synchronization | Audio prompts are provided. Lip-sync and environmental sound fusion require downstream tooling. |
-| Error Handling        | Auto-retry and fallback mechanisms are built-in. Extreme edge cases may require manual intervention. |
+| 类别       | 说明                                                   |
+| ---------- | ------------------------------------------------------ |
+| 网络依赖   | 需稳定访问外部 LLM API，建议配置代理或国内镜像源       |
+| 长文本处理 | 超长剧本建议分段输入，系统已内置上下文记忆与 RAG 机制  |
+| 生成时长   | AI 视频模型输出时长可能存在 ±10% 偏差，属行业正常现象  |
+| 多语言支持 | 当前针对中文剧本深度优化，其他语言效果持续迭代中       |
+| 声音同步   | 当前提供音频提示词，口型同步与环境音融合需下游工具配合 |
+| 错误处理   | 内置自动重试与降级机制，极端异常情况可能需人工介入     |
 
 
 
 ------
 
-## Development Roadmap
+## 开发路线图
 
 <p align="center">
-  <img src="./assets/imgs/penshot-roadmap.webp" alt="PenShot Workflow" width="100%">
+  <img src="/assets/imgs/penshot-roadmap-cn.webp" alt="架构演进路线图之基础阶段" width="100%">
 </p>
 
-### Short-Term
 
-- Optimize long-shot segmentation logic for action continuity
-- Implement consistency validators for character clothing, positioning, and props
-- Specialized prompt format adaptation for Sora, Pika, and other models
-- Hybrid architecture combining rule-based engines and LLMs
-- Full English script support and intelligent node failure fallback
-- Fragment confidence scoring and debug mode (intermediate result persistence)
+### 短期规划
 
-### Mid-Term
+- 智能长镜头分割逻辑优化，保持动作连贯性
+- 角色服装、位置、道具的一致性校验器
+- 针对 Sora、Pika 等模型的提示词格式专项适配
+- 规则引擎与 LLM 混合处理架构
+- 完整英文剧本支持与节点失败智能降级
+- 片段置信度评分与调试模式（中间结果保存）
 
-- Advanced camera language support (pan, tilt, zoom, tracking, follow)
-- Emotion-driven automatic visual style adjustment
-- Ultra-long script chunking + vector DB context memory
-- Multi-script batch queue processing & Web visualization interface
-- Character/scene reference image integration & multi-format export (XML/EDL/JSON)
+### 中期规划
 
-### Long-Term
+- 复杂镜头语言支持（推拉摇移跟）
+- 情感分析驱动视觉风格自动调整
+- 超长剧本分块处理 + 向量数据库上下文记忆
+- 多剧本批量队列处理与 Web 可视化界面
+- 角色/场景参考图接入与多格式导出（XML/EDL/JSON）
 
-- Multimodal input (image + audio + text hybrid)
-- Real-time low-resolution preview & automatic continuity repair
-- Professional editing software plugins (Premiere/FCP/DaVinci)
-- Multi-user collaboration, version control, & autonomous learning from feedback
-- Bidirectional script-fragment traceability, semantic alignment detection, & multi-round correction mechanisms
+### 长期规划
 
-### Ultimate Goal
+- 多模态输入（图+音+文混合）
+- 实时低分辨率预览与自动连续性修复
+- 专业剪辑软件插件（Premiere/FCP/DaVinci）
+- 多人协同、版本控制与从用户反馈中自动学习进化
+- 剧本-片段双向追溯、语义对齐度检测与多轮修正机制
 
-Achieve zero-information-loss visualization for scripts of any length, language, or genre, delivering a standardized workflow that meets professional director-level storyboarding standards. The system will feature customizable styles, full traceability, automatic optimization loops, and cross-modal high consistency.
+### 终极目标
+
+实现任意长度/语言/类型剧本的零信息损失视觉化，输出达到专业导演分镜水准的标准化工作流。系统具备风格可定制、结果可追溯、自动优化循环与跨模态高度一致性能力。
 
 
 
 ------
 
-## Contributing
+## 贡献指南
 
-We welcome contributions via Issues or Pull Requests:
+欢迎通过 Issue 或 Pull Request 参与项目共建：
 
-- **Bug Reports:** Please provide reproduction steps, environment details, and error logs.
-- **Feature Requests:** Use the `enhancement` label.
-- **Code Optimization:** Performance tuning, architectural refactoring, or adding test cases.
-- **Documentation:** Translations, example additions, or technical corrections.
+- 报告问题：请提供复现步骤、环境信息与错误日志
+- 功能建议：使用 `Enhancement` 标签
+- 代码优化：性能调优、架构重构或补充测试用例
+- 文档完善：翻译、示例补充或技术细节修正
 
-Quick dev environment setup:
+开发环境快速搭建：
 
 ```bash
 git clone https://github.com/neopen/story-shot-agent.git
@@ -413,17 +497,23 @@ pytest tests/
 
 ------
 
-## License
+## 许可证
 
-This project is licensed under the MIT License. See the [LICENSE](https://chat.qwen.ai/c/LICENSE) file for details. Copyright (c) 2025 HiPeng
+本项目采用 MIT 开源协议，详见 [LICENSE](LICENSE) 文件。 
 
+[MIT](LICENSE) © 2025 HiPeng (NeoPen)
+
+> 本项目采用 MIT 开源协议，您可以自由使用、修改和分发，只需保留原始版权声明。
 
 
 ------
 
-## Contact
+## 联系方式
 
-- Project Homepage: https://github.com/neopen/story-shot-agent
-- Documentation: https://pengline.cn/2026/02/7e6cd67dd5ee45248f2276ac145555f5/
+- GitHub：https://github.com/neopen/story-shot-agent
+- 邮箱：helpenx@gmail.com
+- 文档：https://pengline.cn/2026/02/7e6cd67dd5ee45248f2276ac145555f5/
 
-Special thanks to LangChain, LangGraph, Chroma, Ollama, and the open-source community for their technical support. If this project has been helpful to your work, please consider starring the repository and sharing your feedback.
+
+
+感谢 LangChain、LangGraph、Chroma、Ollama 及开源社区的技术支持。如本项目对您的工作有帮助，欢迎 Star 关注与反馈。

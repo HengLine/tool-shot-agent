@@ -1,8 +1,7 @@
 """
 Copyright (c) 2025 HiPeng (NeoPen)
-Licensed under the story-shot-agent(penshot) Custom License.
-Certain entities are prohibited from using this software.
-See LICENSE file for details.
+Licensed under the mit license.
+see license File For Details.
 
 @FileName: workflow_orchestrator.py
 @Description: 工作流编排器 - 负责流程结构定义和节点调度

@@ -2,6 +2,8 @@
 # 文档: https://pre-commit.com
 # 更新所有 hooks 到最新稳定版: pre-commit autoupdate
 
+default_install_hook_types: [pre-commit, commit-msg]
+
 repos:
   # ================= 1. 基础文件规范检查 =================
   - repo: https://github.com/pre-commit/pre-commit-hooks
@@ -30,13 +32,12 @@ repos:
         types_or: [python, pyi]
 
   # ================= 3. 静态类型检查 (Mypy) =================
-  # 提示: 大型项目首次运行较慢，可考虑移至 CI 或添加 --follow-imports=skip
   - repo: https://github.com/pre-commit/mirrors-mypy
     rev: v1.14.1
     hooks:
       - id: mypy
         args: [--ignore-missing-imports, --show-error-codes, --pretty]
-        additional_dependencies: []  # 按需添加: [types-requests, types-PyYAML]
+        additional_dependencies: []  # 按需添加类型拓展包: [types-requests, types-PyYAML]
         types_or: [python, pyi]
 
   # ================= 4. Markdown 文档格式化 =================
@@ -44,12 +45,14 @@ repos:
     rev: 0.7.21
     hooks:
       - id: mdformat
-        args: [--number]  # 自动整理列表编号
+        args: [--wrap, "120"]        # 设置单行最大字数，避免超长换行
+        additional_dependencies:
+          - mdformat-gfm             # 增加对 GitHub 风格 Markdown (表格、任务列表等) 的兼容支持
         types_or: [markdown]
 
-  # ================= 5. Shell 脚本检查 (可选) =================
-  # 取消注释即可启用
-  # - repo: https://github.com/shellcheck-py/shellcheck-py
-  #   rev: v0.10.0.1
-  #   hooks:
-  #     - id: shellcheck
+  # ================= 5. Commit Message 格式校验 (Commitizen) =================
+  - repo: https://github.com/commitizen-tools/commitizen
+    rev: v3.27.0
+    hooks:
+      - id: commitizen
+        stages: [commit-msg]

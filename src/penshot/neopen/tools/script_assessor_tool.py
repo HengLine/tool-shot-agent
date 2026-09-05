@@ -1,8 +1,7 @@
 """
 Copyright (c) 2025 HiPeng (NeoPen)
-Licensed under the story-shot-agent(penshot) Custom License.
-Certain entities are prohibited from using this software.
-See LICENSE file for details.
+Licensed under the mit license.
+see license File For Details.
 
 @FileName: script_assessor_tool.py
 @Description: 剧本评估工具，评估剧本质量并提供改进建议
