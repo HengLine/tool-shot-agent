@@ -69,8 +69,8 @@ jobs:
       # 4. 代码规范与语法检查 (Lint)
       - name: Lint with flake8
         run: |
-          # 🎯 在 --exclude 中同步排除静态资源、前端及 IDE 配置文件夹
-          flake8 . --count --exclude=.venv,build,dist,web,docs,assets,.claude,.qoder --select=E9,F63,F7,F82 --show-source --statistics
+          # flake8 会自动读取根目录下的 .flake8 / setup.cfg 配置文件
+          flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
 
       # 5. 执行单元测试 (Test)
       # - name: Run tests with pytest
