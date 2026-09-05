@@ -1,8 +1,7 @@
 """
 Copyright (c) 2025 HiPeng (NeoPen)
-Licensed under the story-shot-agent(penshot) Custom License.
-Certain entities are prohibited from using this software.
-See LICENSE file for details.
+Licensed under the mit license.
+see license File For Details.
 
 @FileName: llama_index_knowledge.py
 @Description: 剧本知识库管理模块，提供基于LlamaIndex的结构化剧本知识库管理功能

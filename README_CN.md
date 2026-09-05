@@ -377,8 +377,11 @@ pytest tests/
 
 ## 许可证
 
-本项目采用 MIT 开源协议，详见 [LICENSE](https://chat.qwen.ai/c/LICENSE) 文件。 Copyright (c) 2025 HiPeng
+本项目采用 MIT 开源协议，详见 [LICENSE](LICENSE) 文件。 
 
+[MIT](LICENSE) © 2025 HiPeng (NeoPen)
+
+> 本项目采用 MIT 开源协议，您可以自由使用、修改和分发，只需保留原始版权声明。
 
 
 ------

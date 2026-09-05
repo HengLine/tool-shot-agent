@@ -314,8 +314,9 @@ pytest tests/
 
 ## License
 
-This project is licensed under the MIT License. See the [LICENSE](https://chat.qwen.ai/c/LICENSE) file for details. Copyright (c) 2025 HiPeng
+This project is licensed under the [MIT](LICENSE) License.
 
+Copyright (c) 2025 HiPeng (NeoPen)
 
 
 ------
