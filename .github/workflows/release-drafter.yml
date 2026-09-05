@@ -2,12 +2,34 @@ name: Release Drafter
 
 on:
   push:
-    # 当推送到 main 分支时自动更新 Release 草稿
     branches:
       - main
-  # 触发 PR 关联，用于自动打标签
+    # 🎯 忽略纯文档、静态资源和 IDE 配置变动
+    # 只有涉及实际功能/代码更新时，才更新 Release 草稿
+    paths-ignore:
+      - 'docs/**'
+      - 'assets/**'
+      - 'web/**'
+      - '**.md'
+      - '.gitignore'
+      - '.claude/**'
+      - '.qoder/**'
+      - '.github/*.md'
+      - '.github/ISSUE_TEMPLATE/**'
+
   pull_request_target:
-    types: [opened, reopened, synchronized]
+    types: [opened, reopened, synchronize]
+    # 🎯 PR 变更时同样过滤纯文档等非代码修改
+    paths-ignore:
+      - 'docs/**'
+      - 'assets/**'
+      - 'web/**'
+      - '**.md'
+      - '.gitignore'
+      - '.claude/**'
+      - '.qoder/**'
+      - '.github/*.md'
+      - '.github/ISSUE_TEMPLATE/**'
 
 permissions:
   contents: write
@@ -16,9 +38,10 @@ permissions:
 jobs:
   update_release_draft:
     permissions:
-      contents: write  # 需要写权限以创建/更新 Release
-      pull-requests: read
+      contents: write       # 允许创建/修改 Release
+      pull-requests: write  # 允许读取 PR 并为其自动添加 Labels 标签
     runs-on: ubuntu-latest
+
     steps:
       - uses: release-drafter/release-drafter@v6
         env:
