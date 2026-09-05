@@ -1,7 +1,7 @@
 <p align="center">
   <h1 align="center">🎬 剧本分镜智能体 (PenShot)</h1>
   <p align="center">
-    <strong>基于 LangGraph 多智能体协作的剧本转分镜系统，确保叙事连续性与镜头级提示词生成。</strong>
+    <strong>基于 LangChain + LangGraph 多智能体协作的剧本转分镜系统，确保叙事连续性与镜头级提示词生成。</strong>
   </p>
   
   <p align="center">
