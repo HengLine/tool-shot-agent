@@ -11,11 +11,14 @@ include src/penshot/**/*.yaml
 include src/penshot/**/*.yml
 # 包含示例文件
 include .env.example
+# 包含资源文件
+include assets/imgs/*.webp
 
 # 排除敏感文件
 global-exclude .env
 global-exclude .env.local
 global-exclude .env.*.local
+global-exclude settings.local.json
 
 # 数据文件
 recursive-include example *

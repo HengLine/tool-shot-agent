@@ -1,109 +1,81 @@
-# 更新日志
+# 更新日志 (CHANGELOG)
 
-本文档记录项目的所有重要变更。
+本项目的所有重要变更都将记录在此文件中。
 
-格式基于 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.0.0/)，
-版本遵循 [语义化版本](https://semver.org/lang/zh-CN/)。
+格式遵循 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.0.0/) 规范，
+版本号遵循 [语义化版本 2.0.0](https://semver.org/lang/zh-CN/)。
 
-## [未发布]
+---
+
+## [Unreleased] - 未发布
 
 ### 新增
-- 项目初始搭建
-- 多智能体流水线架构
-- 剧本解析智能体
-- 镜头拆分智能体
-- 视频片段切割智能体
-- 提示词转换智能体
-- 质量审查智能体
-- REST API 服务器（支持异步任务处理）
-- MCP（模型上下文协议）服务器
-- Python 集成函数调用接口
-- 带队列管理的任务工厂
-- Redis 任务持久化支持
-- 服务重启后任务恢复
-- 批量处理支持
-- Web UI 演示界面
+- Redis 任务持久化支持与服务重启自动恢复功能
+- 批量处理接口 (`penshot batch`) 支持
+- 基于 Gradio/Streamlit 的 Web UI 演示界面
+- 多智能体流水线中的“质量审查智能体”
 
 ### 变更
-- 重构任务管理系统
-- 改进错误处理和日志记录
+- **任务管理系统重构**：采用任务工厂模式重构队列管理逻辑，提升并发稳定性
+- 优化全局错误捕获机制与 Structured Logging 日志格式
 
 ### 修复
-- 异步事件循环阻塞问题
-- 任务队列饥饿问题
-- 工作流缓存内存泄漏
+- 修复高并发请求下异步事件循环 (Event Loop) 阻塞的问题
+- 修复长任务排队时的队列饥饿 (Queue Starvation) 现象
+- 修复 LangGraph 工作流节点状态缓存导致的内存泄漏问题
+
+---
 
 ## [0.1.0] - 2024-01-20
 
 ### 新增
-- 首个 MVP 版本发布
-- 基础剧本解析（支持自然语言、标准格式）
-- 简单镜头拆分（基于场景变化和对话切换）
-- 5 秒强制片段切割
-- 基础提示词生成（模板 + LLM）
-- 基础质量检查（时长、基本连续性）
-- REST API 端点：
-  - `POST /api/v1/storyboard` - 异步任务提交
-  - `POST /api/v1/storyboard/sync` - 同步处理
-  - `GET /api/v1/status/{task_id}` - 查询任务状态
-  - `GET /api/v1/result/{task_id}` - 获取任务结果
-  - `DELETE /api/v1/task/{task_id}` - 取消任务
-  - `GET /api/v1/health` - 健康检查
-- 命令行工具命令：
-  - `penshot breakdown` - 分镜拆分
-  - `penshot serve` - 启动 MCP 服务器
-  - `penshot serve-rest` - 启动 REST API
-  - `penshot status` - 查询任务状态
-  - `penshot batch` - 批量处理
+- **MVP 核心功能发布**：支持自然语言与标准格式剧本解析
+- 智能镜头拆分：基于场景切换与对话流自动分镜（默认支持 5 秒强制片段切割）
+- 提示词引擎：支持多模态提示词生成（包含文本描述、风格及音频提示词）
+- **多协议集成支持**：
+  - REST API 交互：支持同步/异步任务提交、状态查询及任务取消
+  - MCP（Model Context Protocol）服务器模式 (`penshot serve`)
+  - Python SDK 高级函数接口 (`PenshotFunction`)
+- CLI 命令行工具集（`breakdown`, `serve`, `serve-rest`, `status`, `batch`）
 
 ### 已知问题
-- v0.1.0 中任务恢复功能未完全实现
-- WebSocket 支持计划在后续版本实现
+- `v0.1.0` 暂未完全支持 Redis 持久化恢复（将在 `v0.2.0` 正式提供）
+- 暂不支持实时 WebSocket 推送状态变化
+
+---
 
 ## [0.0.1] - 2024-01-01
 
 ### 新增
-- 项目脚手架搭建
-- 基础配置系统
-- 日志系统
-- GitHub Actions CI/CD 流水线
-- PyPI 包配置
+- 项目脚手架与基础代码架构搭建
+- Pydantic-Settings 配置管理与基本 Logging 模块
+- GitHub Actions CI/CD 流水线（自动化 pytest 验证与 PyPI 构建发布）
 
 ---
 
-## 版本策略
+## 升级指南与 API 破损性变更
 
-我们遵循[语义化版本](https://semver.org/lang/zh-CN/)：
+### 从 `0.0.x` 升级至 `0.1.0`
 
-- **主版本号**：不兼容的 API 变更
-- **次版本号**：向下兼容的功能性新增
-- **修订号**：向下兼容的问题修复
-
-### 发布周期
-
-- **Alpha 版本**：每 2 周（功能预览）
-- **Beta 版本**：主要版本发布前
-- **稳定版本**：每季度或按需发布
-
----
-
-## 升级指南
-
-### 从 0.0.x 升级到 0.1.0
+API 交互由直调函数重构为面向对象的 Agent 工厂：
 
 ```python
 # 旧版 API (0.0.x)
 from penshot import generate_storyboard
 result = await generate_storyboard(script)
 
-# 新版 API (0.1.0)
+# 新版 API (0.1.0+)
 from penshot import PenshotFunction
 agent = PenshotFunction()
 result = agent.breakdown_script(script)
 ```
 
+版本控制策略
+主版本号 (X.0.0)：包含不兼容的 API 破坏性变更 (Breaking Changes)
 
+次版本号 (0.X.0)：向下兼容的功能性新增 (Features)
 
-## 贡献者
+修订号 (0.0.X)：向下兼容的紧急修复与性能优化 (Patches)
 
-完整贡献者列表请查看 [CONTRIBUTORS.md](./contributors.md)。
+完整贡献者列表请参阅 [CONTRIBUTORS.md](./contributors.md)。
+

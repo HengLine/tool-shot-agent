@@ -252,3 +252,22 @@ addopts = [
     "-v",
 ]
 asyncio_mode = "auto"
+
+# 约定式提交与 Changelog 自动生成
+[tool.commitizen]
+name = "cz_conventional_commits"
+tag_format = "v$version"
+version_scheme = "semver"
+version = "0.1.0"
+version_files = [
+    "src/penshot/__init__.py:__version__",
+    "pyproject.toml:version"
+]
+changelog_file = "CHANGELOG.md"
+update_changelog_on_bump = true
+style = [
+    ["qmark", "fg:#ff9d00 bold"],
+    ["question", "bold"],
+    ["answer", "fg:#5f87d0 bold"],
+    ["pointer", "fg:#05f5ba bold"]
+]

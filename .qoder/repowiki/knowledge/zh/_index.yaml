@@ -9,8 +9,8 @@ modules:
         dir_name: PenShot 分镜智能体项目根（发布与运行门面）
         title: PenShot 分镜智能体项目根（发布与运行门面）
         scope:
+            - README_en.md
             - README.md
-            - README_CN.md
             - CONTRIBUTING.md
             - SECURITY.md
             - CONTRIBUTORS.md
