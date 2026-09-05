@@ -71,7 +71,7 @@
 
 ## 系统架构与创作流程
 
-![PenShot 创作流程](./assets/imgs/penshot-uml-cn.webp)
+![PenShot 创作流程](/assets/imgs/penshot-uml-cn.webp)
 
 
 <details>
@@ -439,7 +439,7 @@ docker run -d `
 ## 开发路线图
 
 <p align="center">
-  <img src="./assets/imgs/penshot-roadmap-cn.webp" alt="架构演进路线图之基础阶段" width="100%">
+  <img src="/assets/imgs/penshot-roadmap-cn.webp" alt="架构演进路线图之基础阶段" width="100%">
 </p>
 
 
